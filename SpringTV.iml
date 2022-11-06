@@ -15,9 +15,12 @@
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
         <datasource-mapping>
-          <factory-entry name="entityManagerFactory" value="296f939b-51d9-44a0-8256-5df08f62158c" />
+          <factory-entry name="entityManagerFactory" value="d696772a-8834-43a0-961b-b5ea2adf6acf" />
+          <factory-entry name="noname-a.xml@0" value="2a155d0b-491b-4e55-8618-52e6e875900e" />
         </datasource-mapping>
-        <naming-strategy-map />
+        <naming-strategy-map>
+          <unit-entry name="entityManagerFactory" />
+        </naming-strategy-map>
       </configuration>
     </facet>
     <facet type="Spring" name="Spring">
