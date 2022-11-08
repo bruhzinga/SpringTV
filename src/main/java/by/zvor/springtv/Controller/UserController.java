@@ -1,0 +1,120 @@
+package by.zvor.springtv.Controller;
+
+import by.zvor.springtv.DTO.CommentFromUser;
+import by.zvor.springtv.DTO.FavouritesFromClient;
+import by.zvor.springtv.DTO.UnauthorizedUser;
+import by.zvor.springtv.DTO.UnregisteredUser;
+import by.zvor.springtv.Entity.FavouritesView;
+import by.zvor.springtv.Security.JWTUtil;
+import by.zvor.springtv.Service.Interfaces.CommentsViewService;
+import by.zvor.springtv.Service.Interfaces.UserViewService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.sql.SQLException;
+import java.util.Collection;
+
+@RestController
+@RequestMapping("/users/")
+@CrossOrigin("*")
+public class UserController {
+
+    private final UserViewService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JWTUtil jwtUtil;
+
+    private final CommentsViewService commentsService;
+
+    @Autowired
+    public UserController(final UserViewService userService, final AuthenticationManager authenticationManager, final JWTUtil jwtUtil, CommentsViewService commentsService) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.commentsService = commentsService;
+    }
+
+
+    @PostMapping(value = "login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> login(@RequestBody final UnauthorizedUser unauthorizedUser) {
+
+        try {
+            this.userService.login(unauthorizedUser);
+        } catch (final BadCredentialsException e) {
+            return new ResponseEntity<>("User with login " + unauthorizedUser.getLogin() + " doesn't exist", HttpStatus.BAD_REQUEST);
+        }
+
+        final String token = this.jwtUtil.generateToken(unauthorizedUser.getLogin());
+        return new ResponseEntity<>(token, HttpStatus.OK);
+
+    }
+
+    @PostMapping(value = "register", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> register(@RequestBody final UnregisteredUser unauthorizedUser) throws Exception {
+        try {
+            this.userService.register(unauthorizedUser);
+        } catch (final Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("User registered", HttpStatus.OK);
+    }
+
+
+    @GetMapping(value = "/favorites", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<FavouritesView>> getUserFavourites(@RequestHeader("Authorization") String bearerToken) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String username = userDetails.getUsername();
+
+        final var favourites = this.userService.getUserFavouritesByUsername(username);
+        return new ResponseEntity<>(favourites, HttpStatus.OK);
+
+
+    }
+
+    @PostMapping(value = "/addFavourite", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> login(@RequestBody final FavouritesFromClient favouritesFromClient) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String username = userDetails.getUsername();
+        var userId = this.userService.GetUserIdByLogin(username);
+        this.userService.addFavoriteToUser(favouritesFromClient, userId);
+        return new ResponseEntity<>("Favourite added", HttpStatus.OK);
+
+
+    }
+
+    @DeleteMapping(value = "/deleteFavourite", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> deleteFavourite(@RequestBody final FavouritesFromClient favouritesFromClient) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String username = userDetails.getUsername();
+        var userId = this.userService.GetUserIdByLogin(username);
+        try {
+            this.userService.deleteFavoriteFromUser(favouritesFromClient, userId);
+        } catch (final Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("Favourite deleted", HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/PostComment", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> PostComment(@RequestBody final CommentFromUser favouritesFromClient) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String username = userDetails.getUsername();
+        var userId = this.userService.GetUserIdByLogin(username);
+        try {
+            this.commentsService.postComment(favouritesFromClient, userId);
+        } catch (final SQLException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("Comment posted", HttpStatus.OK);
+    }
+}
