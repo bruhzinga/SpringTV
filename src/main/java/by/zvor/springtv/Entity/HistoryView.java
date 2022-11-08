@@ -1,5 +1,6 @@
 package by.zvor.springtv.Entity;
 
+import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import javax.persistence.Table;
 /**
  * Mapping for DB view
  */
+@Getter
 @Entity
 @Immutable
 @Table(name = "HISTORY_VIEW")
@@ -27,15 +29,4 @@ public class HistoryView {
     protected HistoryView() {
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getUsername() {
-        return username;
-    }
 }

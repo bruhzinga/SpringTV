@@ -1,5 +1,6 @@
 package by.zvor.springtv.Entity;
 
+import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import javax.persistence.Table;
 /**
  * Mapping for DB view
  */
+@Getter
 @Entity
 @Immutable
 @Table(name = "USERS_VIEW")
@@ -33,23 +35,4 @@ public class UsersView {
     protected UsersView() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getRole() {
-        return role;
-    }
 }

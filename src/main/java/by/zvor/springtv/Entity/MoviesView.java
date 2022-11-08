@@ -1,5 +1,6 @@
 package by.zvor.springtv.Entity;
 
+import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import javax.persistence.Table;
 /**
  * Mapping for DB view
  */
+@Getter
 @Entity
 @Immutable
 @Table(name = "MOVIES_VIEW")
@@ -39,31 +41,4 @@ public class MoviesView {
     protected MoviesView() {
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public Short getYear() {
-        return year;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Integer getNumberOfViews() {
-        return numberOfViews;
-    }
-
-    public String getDirector() {
-        return director;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
 }

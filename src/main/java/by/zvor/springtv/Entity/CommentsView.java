@@ -1,5 +1,7 @@
 package by.zvor.springtv.Entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
@@ -10,6 +12,9 @@ import javax.persistence.Table;
 /**
  * Mapping for DB view
  */
+
+@Getter
+@Setter
 @Entity
 @Immutable
 @Table(name = "COMMENTS_VIEW")
@@ -30,19 +35,4 @@ public class CommentsView {
     protected CommentsView() {
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getUsername() {
-        return username;
-    }
 }
