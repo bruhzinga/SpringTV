@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface UsersViewRepository extends JpaRepository<UsersView, Integer> {
 
     UsersView getUserById(long id);
+
     @Query(value = "SELECT USERNAME FROM USERS_VIEW WHERE ID = :userId", nativeQuery = true)
     String getUsernameFromUserId(Long userId);
 
@@ -22,7 +23,10 @@ public interface UsersViewRepository extends JpaRepository<UsersView, Integer> {
     @Procedure(procedureName = "REGISTER_USER")
     void saveUser(@Param("user_login") String login, @Param("user_password") String password, @Param("user_email") String email, @Param("user_role_id") Long id);
 
+    @Query(value = "SELECT ID FROM USERS WHERE USERNAME = :login AND PASSWORD_HASH=:password_hash ", nativeQuery = true)
+    Long GetUserIdByUsernameAndPassword(String login, String password_hash);
 
-
+    @Query(value = "SELECT PASSWORD_HASH FROM USERS WHERE USERNAME = :login", nativeQuery = true)
+    String GetUserEncryptedPasswordByLogin(String login);
 
 }

@@ -1,5 +1,6 @@
 package by.zvor.springtv.Service.Interfaces;
 
+import by.zvor.springtv.Config.JasyptEncryptorConfig;
 import by.zvor.springtv.DTO.FavouritesFromClient;
 import by.zvor.springtv.DTO.UnauthorizedUser;
 import by.zvor.springtv.DTO.UnregisteredUser;
@@ -7,6 +8,7 @@ import by.zvor.springtv.Entity.FavouritesView;
 import by.zvor.springtv.Entity.UsersView;
 import by.zvor.springtv.Repository.FavouritesViewRepository;
 import by.zvor.springtv.Repository.UsersViewRepository;
+import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,10 +21,13 @@ public class UserViewService {
     private final UsersViewRepository userRepository;
     private final FavouritesViewRepository favouritesRepository;
 
+    private final StringEncryptor encryptor;
+
     @Autowired
     public UserViewService(UsersViewRepository userRepository, FavouritesViewRepository favouritesRepository) {
         this.userRepository = userRepository;
         this.favouritesRepository = favouritesRepository;
+        encryptor = new JasyptEncryptorConfig().getPasswordEncryptor();
     }
 
     public UsersView findUserById(int id) {
@@ -37,16 +42,15 @@ public class UserViewService {
 
         final String login = unauthorizedUser.getLogin();
         final String password = unauthorizedUser.getPassword();
+        final var encryptedPassword = userRepository.GetUserEncryptedPasswordByLogin(login);
 
-        if (null == userRepository.GetUserIdByUsername(login)) {
-            throw new BadCredentialsException("User with login " + login + " not found");
+        if (null == encryptedPassword) {
+            throw new BadCredentialsException("User with login " + login + " doesn't exist");
         }
-
-        final UsersView userFromRepository = this.userRepository.getUserById(this.userRepository.GetUserIdByUsername(login));
-        if (null == userFromRepository) {
+        if (!encryptor.decrypt(encryptedPassword).equals(password)) {
             throw new BadCredentialsException("Wrong password");
+
         }
-        System.out.println(unauthorizedUser.getPassword() + " " + userFromRepository.getPasswordHash());
     }
 
 
@@ -55,6 +59,7 @@ public class UserViewService {
         if (null != userRepository.GetUserIdByUsername(user.getLogin())) {
             throw new IllegalArgumentException("User with login " + user.getLogin() + " already exists");
         }
+
 
         try {
             this.userRepository.saveUser(user.getLogin(), user.getPassword(), user.getEmail(), user.getRoleId());
