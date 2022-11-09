@@ -25,7 +25,7 @@ class SpringTvApplicationTests {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    //skip this test
+   
     @Disabled
     @Test
     void RegisterAdminUserWithPost() {
