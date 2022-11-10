@@ -111,22 +111,20 @@ public class UserController {
         return new ResponseEntity<>("Favourite deleted", HttpStatus.OK);
     }
 
+    //TODO MAYBE REDO TO TAKE ID PARAMETER FROM URL
     @PostMapping(value = "/PostComment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> PostComment(@RequestBody final CommentFromUser favouritesFromClient) {
+    public ResponseEntity<String> PostComment(@RequestBody final CommentFromUser comment) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
         var userId = this.userService.GetUserIdByLogin(username);
         try {
-            this.commentsService.postComment(favouritesFromClient, userId);
+            this.commentsService.postComment(comment, userId);
         } catch (final SQLException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("Comment posted", HttpStatus.OK);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<String> handleException(SQLException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
+
 }

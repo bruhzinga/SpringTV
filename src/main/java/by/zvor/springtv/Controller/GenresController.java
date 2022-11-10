@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 @RestController
@@ -42,9 +41,5 @@ public class GenresController {
         return new ResponseEntity<String>("Genre deleted", HttpStatus.OK);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<String> handleException(SQLException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
+ 
 }
