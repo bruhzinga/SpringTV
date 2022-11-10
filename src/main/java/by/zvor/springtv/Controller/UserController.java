@@ -18,7 +18,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
@@ -73,7 +72,7 @@ public class UserController {
         return new ResponseEntity<>("User registered", HttpStatus.OK);
     }
 
-    @Transactional(readOnly = true)
+
     @GetMapping(value = "/favorites", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<FavouritesView>> getUserFavourites(@RequestHeader("Authorization") String bearerToken) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -108,11 +107,7 @@ public class UserController {
                 .getPrincipal();
         String username = userDetails.getUsername();
         var userId = this.userService.GetUserIdByLogin(username);
-        try {
-            this.userService.deleteFavoriteFromUser(favouritesFromClient, userId);
-        } catch (final Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        this.userService.deleteFavoriteFromUser(favouritesFromClient, userId);
         return new ResponseEntity<>("Favourite deleted", HttpStatus.OK);
     }
 
@@ -128,5 +123,10 @@ public class UserController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("Comment posted", HttpStatus.OK);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleException(SQLException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

@@ -10,6 +10,7 @@ import java.util.Collection;
 
 public interface FavouritesViewRepository extends JpaRepository<FavouritesView, Integer> {
 
+
     @Procedure(name = "getUserFavouritesByUsername")
     Collection<FavouritesView> getUserFavouritesByUsername(@Param("UserUsername") String username);
 
