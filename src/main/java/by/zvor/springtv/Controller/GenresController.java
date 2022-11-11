@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -28,6 +29,7 @@ public class GenresController {
         return new ResponseEntity<Collection<GenresView>>(genresService.getAllGenres(), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "add", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addGenre(@RequestBody GenreFromUser genre) {
 
@@ -35,11 +37,12 @@ public class GenresController {
         return new ResponseEntity<String>("Genre added", HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "delete", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteGenre(@RequestBody GenresView genre) {
         genresService.deleteGenre(genre.getId());
         return new ResponseEntity<String>("Genre deleted", HttpStatus.OK);
     }
 
- 
+
 }
