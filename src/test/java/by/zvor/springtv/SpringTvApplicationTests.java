@@ -4,6 +4,9 @@ import by.zvor.springtv.DTO.FavouritesFromClient;
 import by.zvor.springtv.DTO.UnauthorizedUser;
 import by.zvor.springtv.DTO.UnregisteredUser;
 import by.zvor.springtv.Security.JWTUtil;
+import by.zvor.springtv.Service.Interfaces.MovieService;
+import by.zvor.springtv.Service.Interfaces.UserViewService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class SpringTvApplicationTests {
 
+    private final MovieService movieService;
+
+    private final UserViewService userViewService;
     @LocalServerPort
     int randomServerPort;
     @Autowired
@@ -25,7 +31,13 @@ class SpringTvApplicationTests {
     @Autowired
     private TestRestTemplate restTemplate;
 
-   
+    @Autowired
+    SpringTvApplicationTests(MovieService movieService, UserViewService userViewService) {
+        this.movieService = movieService;
+        this.userViewService = userViewService;
+    }
+
+
     @Disabled
     @Test
     void RegisterAdminUserWithPost() {
@@ -36,6 +48,7 @@ class SpringTvApplicationTests {
 
     }
 
+    @Disabled
     @Test
     void CorrectLoginShouldReturnValidToken() {
         final String baseUrl = "http://localhost:" + randomServerPort + "/users/";
@@ -44,6 +57,7 @@ class SpringTvApplicationTests {
 
     }
 
+    @Disabled
     @Test
     void IncorrectLoginShouldReturnInvalidToken() {
         final String baseUrl = "http://localhost:" + randomServerPort + "/users/";
@@ -52,6 +66,7 @@ class SpringTvApplicationTests {
 
     }
 
+    @Disabled
     @Test
     void TryToAddToFavoritesAsAuthorisedUser() {
         final String baseUrl = "http://localhost:" + randomServerPort + "/users/";
@@ -70,6 +85,25 @@ class SpringTvApplicationTests {
 
 
     }
+
+    @Test
+    void getUserById() throws InterruptedException {
+        var user = userViewService.findUserById(1L);
+        Assertions.assertThat(user).isNotNull();
+    }
+
+    @Test
+    void getUserIdByUsername() {
+        var id = userViewService.GetUserIdByLogin("admin");
+        Assertions.assertThat(id).isNotNull();
+    }
+
+
+    /*@Test
+    void getUserEncryptedPasswordByLogin() {
+        var password = usersViewRepository.GetUserEncryptedPasswordByLogin("admin");
+        Assertions.assertThat(password).isNotNull();
+    }*/
 
 
 }

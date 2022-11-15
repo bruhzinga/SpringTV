@@ -62,3 +62,10 @@ from videos v;
 create view PEOPLE_VIEW as
 select *
 from people p;
+
+create or replace view MOVIE_ACTORS_VIEW as
+select ma.id, ma.MOVIE_ID, m.TITLE, ma.actor_id, p.name
+from MOVIE_CASTS ma
+         join people p on ma.actor_id = p.id
+         join movies m on ma.movie_id = m.id;
+

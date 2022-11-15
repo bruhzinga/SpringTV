@@ -6,6 +6,32 @@ begin
     VALUES (user_login, (user_password), user_email, user_role_id);
 end REGISTER_USER;
 
+
+create or replace procedure getUserById(userId IN number, result OUT sys_refcursor) is
+begin
+    open result for
+        select * from USERS_VIEW where ID = userId;
+end getUserById;
+
+
+
+create or replace procedure GetUserIdByUsername(InUserName IN varchar2, outID OUT number) is
+begin
+    select id into outID from users where username = InUserName;
+    if outID is null then
+        raise_application_error(-20001, 'User not found');
+    end if;
+end GetUserIdByUsername;
+
+
+create or replace procedure GetUserEncryptedPasswordByLogin(InUserName IN varchar2, password OUT varchar2) is
+begin
+    select password_hash into password from users where username = InUserName;
+    if password is null then
+        raise_application_error(-20001, 'User not found');
+    end if;
+end GetUserEncryptedPasswordByLogin;
+
 create or replace procedure add_favourite(userID number, movieID number) is
 begin
     insert into favourites(USER_ID, MOVIE_ID)
@@ -118,7 +144,26 @@ begin
     values (directorName, photoId, 'director');
 end addDirector;
 
+create or replace procedure getAllMoviesWithoutMedia(result OUT SYS_REFCURSOR) is
+begin
+    Open result for select * from MOVIES_VIEW;
+end getAllMoviesWithoutMedia;
 
+create or replace procedure getMovieByIdWithMedia(movieId IN number, result OUT SYS_REFCURSOR) is
+begin
+    Open result for select * from MOVIE_MEDIA_VIEW where ID = movieId;
+end getMovieByIdWithMedia;
+
+create or replace procedure getMovieByIdWithoutMedia(movieId IN number, result OUT SYS_REFCURSOR) is
+begin
+    Open result for select * from MOVIES_VIEW where id = movieId;
+end getMovieByIdWithoutMedia;
+
+create or replace procedure addActorToMovie(movieId IN number, actorId IN number) is
+begin
+    insert into MOVIE_CASTS(MOVIE_ID, ACTOR_ID)
+    values (movieId, actorId);
+end addActorToMovie;
 
 
 

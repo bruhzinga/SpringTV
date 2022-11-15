@@ -31,14 +31,17 @@ public class UserViewService {
         encryptor = new JasyptEncryptorConfig().getPasswordEncryptor();
     }
 
-    public UsersView findUserById(int id) {
+    @Transactional(readOnly = true)
+    public UsersView findUserById(long id) {
         return userRepository.getUserById(id);
     }
 
+    @Transactional
     public Long GetUserIdByLogin(String login) {
         return userRepository.GetUserIdByUsername(login);
     }
 
+    @Transactional
     public void login(final UnauthorizedUser unauthorizedUser) {
 
         final String login = unauthorizedUser.getLogin();
@@ -55,6 +58,7 @@ public class UserViewService {
     }
 
 
+    @Transactional
     public void register(final UnregisteredUser user) {
 
         if (null != userRepository.GetUserIdByUsername(user.getLogin())) {
@@ -74,10 +78,6 @@ public class UserViewService {
         return favouritesRepository.getUserFavouritesByUsername(username);
     }
 
-    public String getUsernameFromUserId(Long userId) {
-        return userRepository.getUsernameFromUserId(userId);
-    }
-
 
     public void addFavoriteToUser(FavouritesFromClient favouritesFromClient, Long userId) {
         favouritesRepository.addFavouriteToUser(userId, favouritesFromClient.getId());
@@ -88,4 +88,8 @@ public class UserViewService {
     }
 
 
+    @Transactional(readOnly = true)
+    public Long GetUserIdByUsername(String username) {
+        return userRepository.GetUserIdByUsername(username);
+    }
 }
