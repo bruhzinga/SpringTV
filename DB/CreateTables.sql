@@ -48,13 +48,17 @@ create table MOVIES
 create table MOVIE_CASTS
 (
     id       number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
-    movie_id number(10) not null,
-    actor_id number(10) not null,
+    movie_id number(10)   not null,
+    actor_id number(10)   not null,
+    role     varchar2(50) not null,
     /*   character varchar2(50) not null,*/
     primary key (id),
     CONSTRAINT movie_casts_fk1 FOREIGN KEY (movie_id) REFERENCES movies (id) on delete cascade,
-    CONSTRAINT movie_casts_fk2 FOREIGN KEY (actor_id) REFERENCES PEOPLE (id) on delete cascade
+    CONSTRAINT movie_casts_fk2 FOREIGN KEY (actor_id) REFERENCES PEOPLE (id) on delete cascade,
+    constraint movie_casts_uk unique (role, actor_id)
 );
+
+
 
 create table PEOPLE
 (

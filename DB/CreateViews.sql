@@ -64,8 +64,16 @@ select *
 from people p;
 
 create or replace view MOVIE_ACTORS_VIEW as
-select ma.id, ma.MOVIE_ID, m.TITLE, ma.actor_id, p.name
-from MOVIE_CASTS ma
-         join people p on ma.actor_id = p.id
-         join movies m on ma.movie_id = m.id;
+select mc.id,
+       m.id as movie_id,
+       m.TITLE,
+       p.id as actor_id,
+       p.name,
+       I.ID as image_id,
+       mc."Role"
+
+from MOVIE_CASTS mc
+         join people p on mc.actor_id = p.id
+         join movies m on mc.movie_id = m.id
+         join IMAGES I on p.PHOTO_ID = I.ID
 

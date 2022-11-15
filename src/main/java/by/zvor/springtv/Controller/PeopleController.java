@@ -1,5 +1,6 @@
 package by.zvor.springtv.Controller;
 
+import by.zvor.springtv.Entity.ImagesView;
 import by.zvor.springtv.Entity.MovieActorsView;
 import by.zvor.springtv.Entity.PeopleView;
 import by.zvor.springtv.Service.Interfaces.PeopleViewService;
@@ -51,7 +52,25 @@ public class PeopleController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "AddActorToMovie", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addActorToMovie(@RequestBody MovieActorsView actorsView) {
-        peopleViewService.addActorToMovie(actorsView.getActorId(), actorsView.getMovieId());
+        peopleViewService.addActorToMovie(actorsView.getActorId(), actorsView.getMovieId(), actorsView.getRole());
         return new ResponseEntity<String>("Actor added to movie", HttpStatus.OK);
     }
+
+    //TODO
+    @GetMapping(value = "actor/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ImagesView> getActorById(@PathVariable("id") Long id) {
+        return new ResponseEntity<ImagesView>(peopleViewService.getPhotoOfActorById(id), HttpStatus.OK);
+    }
+
+    //TODO
+    @GetMapping(value = "director/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ImagesView> getDirectorById(@PathVariable("id") Long id) {
+        return new ResponseEntity<ImagesView>(peopleViewService.getPhotoOfDirectorById(id), HttpStatus.OK);
+    }
+
+    /*@GetMapping(value = "actor/{id}/movies", produces = MediaType.APPLICATION_JSON_VALUE)//TODO*/
+
+    /*@GetMapping(value = "director/{id}/movies", produces = MediaType.APPLICATION_JSON_VALUE)//TODO*/
+
+
 }

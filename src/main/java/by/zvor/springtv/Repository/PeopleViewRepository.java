@@ -18,6 +18,6 @@ public interface PeopleViewRepository extends JpaRepository<PeopleView, Integer>
     @Procedure(name = "addDirector")
     void addDirector(@Param("directorName") String name, @Param("photoId") Long photoId);
 
-    @Procedure(name = "addActorToMovie")
-    void addActorToMovie(@Param("actorId") Long actorId, @Param("movieId") Long movieId);
+    @Procedure(procedureName = "addActorToMovie")
+    void addActorToMovie(@Param("actorId") Long actorId, @Param("movieId") Long movieId, @Param("RoleIn") String role);
 }

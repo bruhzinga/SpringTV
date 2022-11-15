@@ -16,11 +16,12 @@ public interface UsersViewRepository extends JpaRepository<UsersView, Integer> {
     @Procedure(name = "GetUserIdByUsername")
     Long GetUserIdByUsername(@Param("InUserName") String login);
 
-
-    @Procedure(name = "REGISTER_USER")
-    void saveUser(@Param("user_login") String login, @Param("user_password") String password, @Param("user_email") String email, @Param("user_role_id") Long id);
-
     @Procedure(name = "GetUserEncryptedPasswordByLogin")
     String GetUserEncryptedPasswordByLogin(@Param("InUserName") String login);
+
+
+    @Procedure(procedureName = "REGISTER_USER")
+    void saveUser(@Param("user_login") String login, @Param("user_password") String password, @Param("user_email") String email, @Param("user_role_id") Long id);
+
 
 }

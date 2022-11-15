@@ -4,6 +4,9 @@ CREATE OR REPLACE PROCEDURE REGISTER_USER(user_login VARCHAR2, user_password VAR
 begin
     INSERT INTO users (USERNAME, PASSWORD_HASH, email, ROLE_ID)
     VALUES (user_login, (user_password), user_email, user_role_id);
+EXCEPTION
+    WHEN OTHERS THEN
+        raise_application_error(-20001, 'Error while registering user');
 end REGISTER_USER;
 
 
@@ -159,11 +162,24 @@ begin
     Open result for select * from MOVIES_VIEW where id = movieId;
 end getMovieByIdWithoutMedia;
 
-create or replace procedure addActorToMovie(movieId IN number, actorId IN number) is
+create or replace procedure addActorToMovie(movieId IN number, actorId IN number, RoleIn IN varchar2) is
+    actor varchar2(20);
 begin
-    insert into MOVIE_CASTS(MOVIE_ID, ACTOR_ID)
-    values (movieId, actorId);
+    select profession into actor from people where id = actorId;
+    if actor != 'actor' then
+        raise_application_error(-20001, 'Actor ID is not correct');
+    end if;
+    insert into MOVIE_CASTS(MOVIE_ID, ACTOR_ID, "Role")
+    values (movieId, actorId, RoleIn);
 end addActorToMovie;
+
+create or replace procedure getActorsByMovieId(movieId IN number, result OUT SYS_REFCURSOR) is
+begin
+    --returns PEOPLE_VIEW with all actors in movie
+    Open result for select *
+                    from MOVIE_ACTORS_VIEW
+                    where MOVIE_ID = movieId;
+end getActorsByMovieId;
 
 
 

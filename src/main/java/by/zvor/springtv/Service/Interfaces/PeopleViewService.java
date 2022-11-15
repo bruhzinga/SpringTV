@@ -1,5 +1,6 @@
 package by.zvor.springtv.Service.Interfaces;
 
+import by.zvor.springtv.Entity.ImagesView;
 import by.zvor.springtv.Entity.PeopleView;
 import by.zvor.springtv.Repository.PeopleViewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,17 @@ public class PeopleViewService {
         peopleViewRepository.addDirector(name, photoId);
     }
 
-    public void addActorToMovie(Long actorId, Long movieId) {
-        peopleViewRepository.addActorToMovie(actorId, movieId);
+    public void addActorToMovie(Long actorId, Long movieId, String role) {
+        peopleViewRepository.addActorToMovie(actorId, movieId, role);
+    }
+
+    public ImagesView getPhotoOfActorById(Long id) {
+        //TODO
+        return null;
+    }
+
+    public ImagesView getPhotoOfDirectorById(Long id) {
+        //TODO
+        return null;
     }
 }

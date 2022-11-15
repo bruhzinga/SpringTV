@@ -1,5 +1,6 @@
 package by.zvor.springtv.Controller;
 
+import by.zvor.springtv.DTO.MovieActorViewToUser;
 import by.zvor.springtv.Entity.MoviesView;
 import by.zvor.springtv.Service.Interfaces.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,13 @@ public class MovieController {
         formData.add("VIDEO", movie.getVideo());
         return new ResponseEntity<MultiValueMap<String, Object>>(formData, HttpStatus.OK);
 
+    }
+
+    @GetMapping(value = "{id}/actors", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<MovieActorViewToUser>> getActorsByMovieId(@PathVariable("id") long id) {
+        var actors = movieService.getActorsByMovieId(id);
+        var actorsToUser = actors.stream().map(MovieActorViewToUser::new).toList();
+        return new ResponseEntity<Collection<MovieActorViewToUser>>(actorsToUser, HttpStatus.OK);
     }
 
 

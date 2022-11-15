@@ -1,5 +1,6 @@
 package by.zvor.springtv.Service.Interfaces;
 
+import by.zvor.springtv.Entity.MovieActorsView;
 import by.zvor.springtv.Entity.MovieMediaView;
 import by.zvor.springtv.Entity.MoviesView;
 import by.zvor.springtv.Repository.MovieMediaViewRepository;
@@ -35,5 +36,10 @@ public class MovieService {
     @Transactional(readOnly = true)
     public MovieMediaView getMovieByIdWithMedia(int id) {
         return movieMediaViewRepository.getMovieByIdWithMedia(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<MovieActorsView> getActorsByMovieId(long id) {
+        return moviesViewRepository.getActorsByMovieId(id);
     }
 }
