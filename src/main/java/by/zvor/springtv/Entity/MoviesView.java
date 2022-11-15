@@ -3,10 +3,23 @@ package by.zvor.springtv.Entity;
 import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(
+                name = "getAllMoviesWithoutMedia",
+                procedureName = "getAllMoviesWithoutMedia",
+                resultClasses = MoviesView.class, parameters = {
+                @StoredProcedureParameter(mode = ParameterMode.REF_CURSOR, name = "result", type = void.class)
+        }),
+        @NamedStoredProcedureQuery(
+                name = "getMovieByIdWithoutMedia",
+                procedureName = "getMovieByIdWithoutMedia",
+                resultClasses = MoviesView.class, parameters = {
+                @StoredProcedureParameter(mode = ParameterMode.IN, name = "movieId", type = Integer.class),
+                @StoredProcedureParameter(mode = ParameterMode.REF_CURSOR, name = "result", type = void.class)
+        })
+})
 
 /**
  * Mapping for DB view

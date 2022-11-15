@@ -1,5 +1,6 @@
 package by.zvor.springtv.Controller;
 
+import by.zvor.springtv.Entity.MovieActorsView;
 import by.zvor.springtv.Entity.PeopleView;
 import by.zvor.springtv.Service.Interfaces.PeopleViewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +46,12 @@ public class PeopleController {
     public ResponseEntity<String> addDirector(@RequestBody PeopleView director) {
         peopleViewService.addDirector(director.getName(), director.getPhotoId());
         return new ResponseEntity<String>("Director added", HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping(value = "AddActorToMovie", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> addActorToMovie(@RequestBody MovieActorsView actorsView) {
+        peopleViewService.addActorToMovie(actorsView.getActorId(), actorsView.getMovieId());
+        return new ResponseEntity<String>("Actor added to movie", HttpStatus.OK);
     }
 }

@@ -35,4 +35,8 @@ public class PeopleViewService {
     public void addDirector(String name, Long photoId) {
         peopleViewRepository.addDirector(name, photoId);
     }
+
+    public void addActorToMovie(Long actorId, Long movieId) {
+        peopleViewRepository.addActorToMovie(actorId, movieId);
+    }
 }

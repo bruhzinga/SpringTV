@@ -13,4 +13,6 @@ public class ControllerExceptionHandler {
     public ResponseEntity<String> handleException(SQLException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    
 }
