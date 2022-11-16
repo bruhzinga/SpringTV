@@ -122,6 +122,8 @@ public class UserController {
             this.commentsService.postComment(comment, userId);
         } catch (final SQLException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
         return new ResponseEntity<>("Comment posted", HttpStatus.OK);
     }

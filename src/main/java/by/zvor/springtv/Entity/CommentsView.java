@@ -32,7 +32,7 @@ public class CommentsView {
     @Column(name = "USERNAME", nullable = false, length = 50)
     private String username;
 
-    protected CommentsView() {
+    public CommentsView() {
     }
 
 }

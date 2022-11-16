@@ -114,3 +114,7 @@ call ADDNEWMOVIE('test2',
 call ADDNEWMOVIE('test3',
                  'test3',
                  2007, 11, 7, 3, 22, 2);
+
+call ADDNEWMOVIE('ImageTEST',
+                 'img',
+                 2022, 34, 7, 3, 22, 2);

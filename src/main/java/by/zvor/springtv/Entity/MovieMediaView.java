@@ -24,7 +24,7 @@ import javax.persistence.*;
 public class MovieMediaView {
     @Id
     @Column(name = "ID", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "IMAGE_NAME", nullable = false, length = 50)
     private String imageName;

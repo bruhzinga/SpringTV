@@ -1,7 +1,9 @@
 package by.zvor.springtv.Controller;
 
 import by.zvor.springtv.DTO.MovieActorViewToUser;
+import by.zvor.springtv.Entity.CommentsView;
 import by.zvor.springtv.Entity.MoviesView;
+import by.zvor.springtv.Service.Interfaces.CommentsViewService;
 import by.zvor.springtv.Service.Interfaces.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 @RestController
@@ -18,10 +21,13 @@ import java.util.Collection;
 @CrossOrigin("*")
 public class MovieController {
     private final MovieService movieService;
+    private final CommentsViewService commentsService;
+
 
     @Autowired
-    public MovieController(MovieService movieService) {
+    public MovieController(MovieService movieService, CommentsViewService commentsService) {
         this.movieService = movieService;
+        this.commentsService = commentsService;
     }
 
     @GetMapping(value = "allwithoutmedia", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -57,5 +63,10 @@ public class MovieController {
         return new ResponseEntity<Collection<MovieActorViewToUser>>(actorsToUser, HttpStatus.OK);
     }
 
+    @GetMapping(value = "{id}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CommentsView>> getCommentsByMovieId(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
+        var comments = commentsService.getCommentsByMovieId(id);
+        return new ResponseEntity<Collection<CommentsView>>(comments, HttpStatus.OK);
+    }
 
 }

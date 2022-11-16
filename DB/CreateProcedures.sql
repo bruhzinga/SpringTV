@@ -130,6 +130,8 @@ EXCEPTION
             raise_application_error(-20001, 'Non existent ID');
 end AddNewMovie;
 
+
+
 create or replace procedure findAllByProfession(professionIn IN varchar2, result OUT SYS_REFCURSOR) is
 begin
     Open result for select * from PEOPLE_VIEW where professionIn = profession;
@@ -175,12 +177,27 @@ end addActorToMovie;
 
 create or replace procedure getActorsByMovieId(movieId IN number, result OUT SYS_REFCURSOR) is
 begin
-    --returns PEOPLE_VIEW with all actors in movie
     Open result for select *
                     from MOVIE_ACTORS_VIEW
                     where MOVIE_ID = movieId;
 end getActorsByMovieId;
 
+
+create or replace procedure GetThumbnailByMovieId(movieId IN number, result OUT blob) is
+begin
+    select IMAGE
+    into result
+    from MOVIE_MEDIA_VIEW
+    where ID = movieId;
+end GetThumbnailByMovieId;
+
+create or replace procedure GetCommentsByMovieId(movieId IN number, result OUT SYS_REFCURSOR) is
+begin
+    Open result for select *
+                    from COMMENTS_VIEW
+                             join movies on movies.TITLE = comments_view.TITLE
+                    where movies.ID = movieId;
+end GetCommentsByMovieId;
 
 
 

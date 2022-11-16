@@ -4,6 +4,8 @@ import by.zvor.springtv.Repository.VideosViewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
+
 @Service
 public class VideosViewService {
     private final VideosViewRepository videosViewRepository;
@@ -13,7 +15,7 @@ public class VideosViewService {
         this.videosViewRepository = videosViewRepository;
     }
 
-    public void addNewVideo(String name, byte[] video, String type) {
+    public void addNewVideo(String name, byte[] video, String type) throws SQLException, ClassNotFoundException {
         videosViewRepository.addNewVideo(name, video, type);
     }
 }

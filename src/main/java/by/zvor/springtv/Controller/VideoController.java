@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
+
 @RestController
 @RequestMapping("/video/")
 @CrossOrigin("*")
@@ -22,7 +24,7 @@ public class VideoController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> addNewImage(@RequestPart String name, @RequestPart byte[] video, @RequestPart String type) {
+    public ResponseEntity<String> addNewImage(@RequestPart String name, @RequestPart byte[] video, @RequestPart String type) throws SQLException, ClassNotFoundException {
         videoService.addNewVideo(name, video, type);
         return new ResponseEntity<>("Video added", HttpStatus.OK);
     }
