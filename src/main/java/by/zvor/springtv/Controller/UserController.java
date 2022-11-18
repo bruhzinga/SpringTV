@@ -47,7 +47,7 @@ public class UserController {
 
 
     @PostMapping(value = "login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> login(@RequestBody final UnauthorizedUser unauthorizedUser) {
+    public ResponseEntity<String> login(@RequestBody final UnauthorizedUser unauthorizedUser) throws SQLException, ClassNotFoundException {
         try {
             this.userService.login(unauthorizedUser);
         } catch (final BadCredentialsException e) {
@@ -74,7 +74,7 @@ public class UserController {
 
 
     @GetMapping(value = "/favorites", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<FavouritesView>> getUserFavourites(@RequestHeader("Authorization") String bearerToken) {
+    public ResponseEntity<Collection<FavouritesView>> getUserFavourites(@RequestHeader("Authorization") String bearerToken) throws SQLException, ClassNotFoundException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
@@ -86,7 +86,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/addFavourite", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> login(@RequestBody final FavouritesFromClient favouritesFromClient) {
+    public ResponseEntity<String> login(@RequestBody final FavouritesFromClient favouritesFromClient) throws SQLException, ClassNotFoundException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
@@ -102,7 +102,7 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/deleteFavourite", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> deleteFavourite(@RequestBody final FavouritesFromClient favouritesFromClient) {
+    public ResponseEntity<String> deleteFavourite(@RequestBody final FavouritesFromClient favouritesFromClient) throws SQLException, ClassNotFoundException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
@@ -113,7 +113,7 @@ public class UserController {
 
     //TODO MAYBE REDO TO TAKE ID PARAMETER FROM URL
     @PostMapping(value = "/PostComment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> PostComment(@RequestBody final CommentFromUser comment) {
+    public ResponseEntity<String> PostComment(@RequestBody final CommentFromUser comment) throws SQLException, ClassNotFoundException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();

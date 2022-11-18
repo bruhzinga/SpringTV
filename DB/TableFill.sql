@@ -118,3 +118,12 @@ call ADDNEWMOVIE('test3',
 call ADDNEWMOVIE('ImageTEST',
                  'img',
                  2022, 34, 7, 3, 22, 2);
+
+begin
+    for i in 10001..100000
+        loop
+            ADDNEWMOVIE('test' || i,
+                        'test' || i,
+                        2007, 34, 7, 3, 22, 2);
+        end loop;
+end;

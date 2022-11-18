@@ -30,10 +30,29 @@ public class ImageController {
         return new ResponseEntity<>("Image added", HttpStatus.OK);
     }
 
-    @GetMapping(value = "getThumbnail/{id}", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getThumbnail(@PathVariable("id") Long id) throws SQLException, ClassNotFoundException {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping(value = "/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> UpdateImage(@RequestPart String name, @RequestPart byte[] image, @RequestPart String type, @PathVariable("id") long id) throws SQLException, ClassNotFoundException {
+        imagesService.updateImage(id, name, image, type);
+        return new ResponseEntity<>("Image updated", HttpStatus.OK);
+    }
+
+
+    @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> deleteImage(@PathVariable Long id) throws SQLException, ClassNotFoundException {
+        imagesService.deleteImage(id);
+        return new ResponseEntity<>("Image deleted", HttpStatus.OK);
+    }
+
+
+    @GetMapping(value = "getThumbnail/{movieId}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getThumbnail(@PathVariable("movieId") Long id) throws SQLException, ClassNotFoundException {
         return new ResponseEntity<>(imagesService.getThumbnail(id), HttpStatus.OK);
     }
 
+    @GetMapping(value = "people/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getPersonImage(@PathVariable("id") Long id) throws SQLException, ClassNotFoundException {
+        return new ResponseEntity<>(imagesService.getPersonImage(id), HttpStatus.OK);
+    }
 
 }

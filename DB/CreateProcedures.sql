@@ -199,5 +199,29 @@ begin
                     where movies.ID = movieId;
 end GetCommentsByMovieId;
 
+create or replace procedure GetPersonImagebyId(personId IN number, result OUT blob) is
+begin
+    select IMAGE
+    into result
+    from IMAGES
+    where ID = personId;
+end GetPersonImagebyId;
+
+create or replace procedure DeleteImageById(imageId IN number) is
+begin
+    delete
+    from images
+    where images.id = imageId;
+end DeleteImageById;
+
+create or replace procedure UpdateImageById(imageId IN number, nameIn IN varchar2, imageIn IN blob,
+                                            typeIn IN varchar2) is
+begin
+    update images
+    set NAME   = nameIn,
+        IMAGE  = imageIn,
+        "TYPE" = typeIn
+    where images.id = imageId;
+end UpdateImageById;
 
 

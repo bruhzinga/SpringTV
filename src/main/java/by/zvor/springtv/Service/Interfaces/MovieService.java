@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 @Service
@@ -24,22 +25,22 @@ public class MovieService {
 
 
     @Transactional(readOnly = true)
-    public Collection<MoviesView> getAllMoviesWithoutMedia() {
+    public Collection<MoviesView> getAllMoviesWithoutMedia() throws SQLException, ClassNotFoundException {
         return moviesViewRepository.getAllMoviesWithoutMedia();
     }
 
     @Transactional(readOnly = true)
-    public MoviesView getMovieByIdNoMedia(int id) {
+    public MoviesView getMovieByIdNoMedia(int id) throws SQLException, ClassNotFoundException {
         return moviesViewRepository.getMovieByIdNoMedia(id);
     }
 
     @Transactional(readOnly = true)
-    public MovieMediaView getMovieByIdWithMedia(int id) {
+    public MovieMediaView getMovieByIdWithMedia(int id) throws SQLException, ClassNotFoundException {
         return movieMediaViewRepository.getMovieByIdWithMedia(id);
     }
 
     @Transactional(readOnly = true)
-    public Collection<MovieActorsView> getActorsByMovieId(long id) {
+    public Collection<MovieActorsView> getActorsByMovieId(long id) throws SQLException, ClassNotFoundException {
         return moviesViewRepository.getActorsByMovieId(id);
     }
 }

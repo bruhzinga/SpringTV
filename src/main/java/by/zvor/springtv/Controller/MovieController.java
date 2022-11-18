@@ -31,19 +31,19 @@ public class MovieController {
     }
 
     @GetMapping(value = "allwithoutmedia", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<MoviesView>> getAllMoviesWithoutMedia() {
+    public ResponseEntity<Collection<MoviesView>> getAllMoviesWithoutMedia() throws SQLException, ClassNotFoundException {
         var movies = movieService.getAllMoviesWithoutMedia();
         return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
     }
 
     @GetMapping(value = "nomedia/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MoviesView> getMovieById(@PathVariable("id") int id) {
+    public ResponseEntity<MoviesView> getMovieById(@PathVariable("id") int id) throws SQLException, ClassNotFoundException {
         return new ResponseEntity<MoviesView>(movieService.getMovieByIdNoMedia(id), HttpStatus.OK);
     }
 
 
     @GetMapping(value = "media/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<MultiValueMap<String, Object>> getMovieWithMediaById(@PathVariable("id") int id) {
+    public ResponseEntity<MultiValueMap<String, Object>> getMovieWithMediaById(@PathVariable("id") int id) throws SQLException, ClassNotFoundException {
 
         var movie = movieService.getMovieByIdWithMedia(id);
         MultiValueMap<String, Object> formData = new LinkedMultiValueMap<String, Object>();
@@ -57,7 +57,7 @@ public class MovieController {
     }
 
     @GetMapping(value = "{id}/actors", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<MovieActorViewToUser>> getActorsByMovieId(@PathVariable("id") long id) {
+    public ResponseEntity<Collection<MovieActorViewToUser>> getActorsByMovieId(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
         var actors = movieService.getActorsByMovieId(id);
         var actorsToUser = actors.stream().map(MovieActorViewToUser::new).toList();
         return new ResponseEntity<Collection<MovieActorViewToUser>>(actorsToUser, HttpStatus.OK);

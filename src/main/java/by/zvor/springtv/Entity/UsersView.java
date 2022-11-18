@@ -1,6 +1,7 @@
 package by.zvor.springtv.Entity;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -38,6 +39,7 @@ import javax.persistence.*;
  * Mapping for DB view
  */
 @Getter
+@Setter
 @Entity
 @Immutable
 @Table(name = "USERS_VIEW")
@@ -58,7 +60,7 @@ public class UsersView {
     @Column(name = "ROLE", nullable = false, length = 50)
     private String role;
 
-    protected UsersView() {
+    public UsersView() {
     }
 
 }

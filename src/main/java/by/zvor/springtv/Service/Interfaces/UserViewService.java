@@ -15,6 +15,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 @Service
@@ -32,17 +33,17 @@ public class UserViewService {
     }
 
     @Transactional(readOnly = true)
-    public UsersView findUserById(long id) {
+    public UsersView findUserById(long id) throws SQLException, ClassNotFoundException {
         return userRepository.getUserById(id);
     }
 
     @Transactional
-    public Long GetUserIdByLogin(String login) {
+    public Long GetUserIdByLogin(String login) throws SQLException, ClassNotFoundException {
         return userRepository.GetUserIdByUsername(login);
     }
 
     @Transactional
-    public void login(final UnauthorizedUser unauthorizedUser) {
+    public void login(final UnauthorizedUser unauthorizedUser) throws SQLException, ClassNotFoundException {
 
         final String login = unauthorizedUser.getLogin();
         final String password = unauthorizedUser.getPassword();
@@ -55,7 +56,7 @@ public class UserViewService {
     }
 
 
-    public void register(final UnregisteredUser user) {
+    public void register(final UnregisteredUser user) throws SQLException, ClassNotFoundException {
 
         try {
             this.userRepository.saveUser(user.getLogin(), user.getPassword(), user.getEmail(), user.getRoleId());
@@ -65,22 +66,22 @@ public class UserViewService {
     }
 
     @Transactional(readOnly = true)
-    public Collection<FavouritesView> getUserFavouritesByUsername(String username) {
+    public Collection<FavouritesView> getUserFavouritesByUsername(String username) throws SQLException, ClassNotFoundException {
         return favouritesRepository.getUserFavouritesByUsername(username);
     }
 
 
-    public void addFavoriteToUser(FavouritesFromClient favouritesFromClient, Long userId) {
+    public void addFavoriteToUser(FavouritesFromClient favouritesFromClient, Long userId) throws SQLException, ClassNotFoundException {
         favouritesRepository.addFavouriteToUser(userId, favouritesFromClient.getId());
     }
 
-    public void deleteFavoriteFromUser(FavouritesFromClient favouritesFromClient, Long userId) {
+    public void deleteFavoriteFromUser(FavouritesFromClient favouritesFromClient, Long userId) throws SQLException, ClassNotFoundException {
         favouritesRepository.deleteFavouriteFromUser(userId, favouritesFromClient.getId());
     }
 
 
     @Transactional(readOnly = true)
-    public Long GetUserIdByUsername(String username) {
+    public Long GetUserIdByUsername(String username) throws SQLException, ClassNotFoundException {
         return userRepository.GetUserIdByUsername(username);
     }
 }

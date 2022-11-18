@@ -1,6 +1,7 @@
 package by.zvor.springtv.Entity;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.*;
@@ -35,6 +36,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @Immutable
+@Setter
 @Table(name = "MOVIES_VIEW")
 public class MoviesView {
     @Id
@@ -59,7 +61,7 @@ public class MoviesView {
     @Column(name = "GENRE", nullable = false, length = 50)
     private String genre;
 
-    protected MoviesView() {
+    public MoviesView() {
     }
 
 }

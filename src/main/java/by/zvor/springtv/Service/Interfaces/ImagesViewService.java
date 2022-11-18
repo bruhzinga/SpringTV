@@ -27,4 +27,16 @@ public class ImagesViewService {
 
 
     }
+
+    public byte[] getPersonImage(Long personId) throws SQLException, ClassNotFoundException {
+        return imagesViewRepository.getPersonImage(personId);
+    }
+
+    public void deleteImage(Long id) throws SQLException, ClassNotFoundException {
+        imagesViewRepository.deleteImage(id);
+    }
+
+    public void updateImage(Long id, String name, byte[] image, String type) throws SQLException, ClassNotFoundException {
+        imagesViewRepository.updateImage(id, name, image, type);
+    }
 }

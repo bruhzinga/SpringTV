@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
+
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -24,7 +26,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
 
-        final UsersView user = this.usersViewService.findUserById(this.usersViewService.GetUserIdByUsername(username));
+        final UsersView user;
+        try {
+            user = this.usersViewService.findUserById(this.usersViewService.GetUserIdByUsername(username));
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
         if (null == user) {
             throw new UsernameNotFoundException("User not found");

@@ -1,6 +1,5 @@
 package by.zvor.springtv.Controller;
 
-import by.zvor.springtv.Entity.ImagesView;
 import by.zvor.springtv.Entity.MovieActorsView;
 import by.zvor.springtv.Entity.PeopleView;
 import by.zvor.springtv.Service.Interfaces.PeopleViewService;
@@ -11,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 @RestController
@@ -26,47 +26,38 @@ public class PeopleController {
 
 
     @GetMapping(value = "allActors", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<PeopleView>> getAllActors() {
+    public ResponseEntity<Collection<PeopleView>> getAllActors() throws SQLException, ClassNotFoundException {
         return new ResponseEntity<Collection<PeopleView>>(peopleViewService.GetAllActors(), HttpStatus.OK);
     }
 
     @GetMapping(value = "allDirectors", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<PeopleView>> getAllDirectors() {
+    public ResponseEntity<Collection<PeopleView>> getAllDirectors() throws SQLException, ClassNotFoundException {
         return new ResponseEntity<Collection<PeopleView>>(peopleViewService.GetAllDirectors(), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "addActor", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> addActor(@RequestBody PeopleView actor) {
+    public ResponseEntity<String> addActor(@RequestBody PeopleView actor) throws SQLException, ClassNotFoundException {
         peopleViewService.addActor(actor.getName(), actor.getPhotoId());
         return new ResponseEntity<String>("Actor added", HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "addDirector", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> addDirector(@RequestBody PeopleView director) {
+    public ResponseEntity<String> addDirector(@RequestBody PeopleView director) throws SQLException, ClassNotFoundException {
         peopleViewService.addDirector(director.getName(), director.getPhotoId());
         return new ResponseEntity<String>("Director added", HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "AddActorToMovie", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> addActorToMovie(@RequestBody MovieActorsView actorsView) {
+    public ResponseEntity<String> addActorToMovie(@RequestBody MovieActorsView actorsView) throws SQLException, ClassNotFoundException {
         peopleViewService.addActorToMovie(actorsView.getActorId(), actorsView.getMovieId(), actorsView.getRole());
         return new ResponseEntity<String>("Actor added to movie", HttpStatus.OK);
     }
 
-    //TODO
-    @GetMapping(value = "actor/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ImagesView> getActorById(@PathVariable("id") Long id) {
-        return new ResponseEntity<ImagesView>(peopleViewService.getPhotoOfActorById(id), HttpStatus.OK);
-    }
 
-    //TODO
-    @GetMapping(value = "director/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ImagesView> getDirectorById(@PathVariable("id") Long id) {
-        return new ResponseEntity<ImagesView>(peopleViewService.getPhotoOfDirectorById(id), HttpStatus.OK);
-    }
+
 
     /*@GetMapping(value = "actor/{id}/movies", produces = MediaType.APPLICATION_JSON_VALUE)//TODO*/
 

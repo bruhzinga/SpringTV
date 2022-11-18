@@ -37,4 +37,43 @@ public interface ImagesViewRepository extends JpaRepository<ImagesView, Integer>
         return image;
     }
 
+    default byte[] getPersonImage(Long personId) throws ClassNotFoundException, SQLException {
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        Connection con = DriverManager.getConnection(
+                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+        java.sql.CallableStatement stmt = con.prepareCall("{call GetPersonImagebyId(?,?)}");
+        stmt.setLong(1, personId);
+        stmt.registerOutParameter(2, java.sql.Types.BLOB);
+        stmt.execute();
+        java.sql.Blob blob = stmt.getBlob(2);
+        var image = blob.getBytes(1, (int) blob.length());
+        con.close();
+        return image;
+    }
+
+    default void deleteImage(Long id) throws ClassNotFoundException, SQLException {
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        Connection con = DriverManager.getConnection(
+                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+        var statement = con.prepareCall("{call DeleteImageById(?)}");
+        statement.setLong(1, id);
+        statement.execute();
+        con.close();
+
+
+    }
+
+    default void updateImage(Long id, String name, byte[] image, String type) throws SQLException, ClassNotFoundException {
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        Connection con = DriverManager.getConnection(
+                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+        var statement = con.prepareCall("{call UpdateImageById(?,?,?,?)}");
+        statement.setLong(1, id);
+        statement.setString(2, name);
+        statement.setBytes(3, image);
+        statement.setString(4, type);
+        statement.execute();
+        con.close();
+
+    }
 }

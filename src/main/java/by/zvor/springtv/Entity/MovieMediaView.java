@@ -1,23 +1,21 @@
 package by.zvor.springtv.Entity;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Mapping for DB view
  */
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(
-                name = "getMovieByIdWithMedia",
-                procedureName = "getMovieByIdWithMedia",
-                resultClasses = MovieMediaView.class, parameters = {
-                @StoredProcedureParameter(mode = ParameterMode.REF_CURSOR, name = "result", type = void.class),
-                @StoredProcedureParameter(mode = ParameterMode.IN, name = "movieId", type = Integer.class)
-        })})
+
 
 @Getter
+@Setter
 @Entity
 @Immutable
 @Table(name = "MOVIE_MEDIA_VIEW")
@@ -38,6 +36,6 @@ public class MovieMediaView {
     @Column(name = "VIDEO", nullable = false)
     private byte[] video;
 
-    protected MovieMediaView() {
+    public MovieMediaView() {
     }
 }
