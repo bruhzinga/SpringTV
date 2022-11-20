@@ -2,8 +2,11 @@ package by.zvor.springtv.Repository;
 
 import by.zvor.springtv.Entity.MovieActorsView;
 import by.zvor.springtv.Entity.MoviesView;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -27,10 +30,16 @@ create or replace procedure getActorsByMovieId(movieId IN number, result OUT SYS
         from MOVIE_ACTORS_VIEW
         where MOVIE_ID = movieId;
         end getActorsByMovieId;*/
+@Repository
+public class MoviesViewRepository {
+    /*@Procedure(name
+     = "getAllMoviesWithoutMedia")*/
 
-public interface MoviesViewRepository extends JpaRepository<MoviesView, Integer> {
-    /*@Procedure(name = "getAllMoviesWithoutMedia")*/
-    default Collection<MoviesView> getAllMoviesWithoutMedia() throws ClassNotFoundException, SQLException {
+    @Autowired
+    @Qualifier("AdminJdbcTemplate")
+    private JdbcTemplate jdbcTemplate;
+
+    public Collection<MoviesView> getAllMoviesWithoutMedia() throws ClassNotFoundException, SQLException {
         Class.forName("oracle.jdbc.driver.OracleDriver");
         Connection con = DriverManager.getConnection(
                 "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
@@ -55,10 +64,8 @@ public interface MoviesViewRepository extends JpaRepository<MoviesView, Integer>
     }
 
     /*@Procedure(name = "getMovieByIdWithoutMedia")*/
-    default MoviesView getMovieByIdNoMedia(@Param("movieId") int id) throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public MoviesView getMovieByIdNoMedia(@Param("movieId") int id) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         java.sql.CallableStatement stmt = con.prepareCall("{call getMovieByIdWithoutMedia(?,?)}");
         stmt.setInt(1, id);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
@@ -74,12 +81,14 @@ public interface MoviesViewRepository extends JpaRepository<MoviesView, Integer>
             movie.setDirector(rs.getString("DIRECTOR"));
             movie.setGenre(rs.getString("GENRE"));
         }
-        con.close();
+
         return movie;
+
     }
 
     /* @Procedure(name = "getActorsByMovieId")*/
-    default Collection<MovieActorsView> getActorsByMovieId(@Param("movieId") long id) throws ClassNotFoundException, SQLException {
+    public Collection<MovieActorsView> getActorsByMovieId(@Param("movieId") long id) throws
+            ClassNotFoundException, SQLException {
         Class.forName("oracle.jdbc.driver.OracleDriver");
         Connection con = DriverManager.getConnection(
                 "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");

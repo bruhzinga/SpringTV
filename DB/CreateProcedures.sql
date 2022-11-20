@@ -149,10 +149,15 @@ begin
     values (directorName, photoId, 'director');
 end addDirector;
 
-create or replace procedure getAllMoviesWithoutMedia(result OUT SYS_REFCURSOR) is
+create or replace procedure getAllMoviesWithoutMedia(result OUT SYS_REFCURSOR, page IN Number) is
 begin
-    Open result for select * from MOVIES_VIEW;
+    Open result for select *
+                    from MOVIES_VIEW
+                    order by ID
+                    offset (page - 1) * 50 rows fetch next 50 rows only;
 end getAllMoviesWithoutMedia;
+
+
 
 create or replace procedure getMovieByIdWithMedia(movieId IN number, result OUT SYS_REFCURSOR) is
 begin

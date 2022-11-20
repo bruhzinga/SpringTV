@@ -2,12 +2,13 @@ package by.zvor.springtv.Repository;
 
 
 import by.zvor.springtv.Entity.UsersView;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /*create or replace procedure getUserById(userId IN number, result OUT sys_refcursor) is
@@ -36,13 +37,15 @@ import java.sql.SQLException;
         end GetUserEncryptedPasswordByLogin;*/
 
 @Repository
-public interface UsersViewRepository extends JpaRepository<UsersView, Integer> {
+public class UsersViewRepository {
+
+    @Autowired
+    @Qualifier("AdminJdbcTemplate")
+    private JdbcTemplate jdbcTemplate;
 
     /*@Procedure(name = "getUserById")*/
-    default UsersView getUserById(@Param("userId") Long id) throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public UsersView getUserById(@Param("userId") Long id) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         java.sql.CallableStatement stmt = con.prepareCall("{call getUserById(?,?)}");
         stmt.setLong(1, id);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
@@ -55,53 +58,47 @@ public interface UsersViewRepository extends JpaRepository<UsersView, Integer> {
             user.setPasswordHash(rs.getString("PASSWORD_HASH"));
             user.setRole(rs.getString("ROLE"));
         }
-        con.close();
+
         return user;
     }
 
 
     /* @Procedure(name = "GetUserIdByUsername")*/
 
-    default Long GetUserIdByUsername(@Param("InUserName") String login) throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public Long GetUserIdByUsername(@Param("InUserName") String login) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         java.sql.CallableStatement stmt = con.prepareCall("{call GetUserIdByUsername(?,?)}");
         stmt.setString(1, login);
         stmt.registerOutParameter(2, java.sql.Types.NUMERIC);
         stmt.execute();
         Long id = stmt.getLong(2);
-        con.close();
+
         return id;
     }
 
     /*@Procedure(name = "GetUserEncryptedPasswordByLogin")*/
-    default String GetUserEncryptedPasswordByLogin(@Param("InUserName") String login) throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public String GetUserEncryptedPasswordByLogin(@Param("InUserName") String login) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         java.sql.CallableStatement stmt = con.prepareCall("{call GetUserEncryptedPasswordByLogin(?,?)}");
         stmt.setString(1, login);
         stmt.registerOutParameter(2, java.sql.Types.VARCHAR);
         stmt.execute();
         String password = stmt.getString(2);
-        con.close();
+
         return password;
     }
 
 
     /*   @Procedure(procedureName = "REGISTER_USER")*/
-    default void saveUser(@Param("user_login") String login, @Param("user_password") String password, @Param("user_email") String email, @Param("user_role_id") Long id) throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public void saveUser(@Param("user_login") String login, @Param("user_password") String password, @Param("user_email") String email, @Param("user_role_id") Long id) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         var statement = con.prepareCall("{call REGISTER_USER(?,?,?,?)}");
         statement.setString(1, login);
         statement.setString(2, password);
         statement.setString(3, email);
         statement.setLong(4, id);
         statement.execute();
-        con.close();
+
 
     }
 
