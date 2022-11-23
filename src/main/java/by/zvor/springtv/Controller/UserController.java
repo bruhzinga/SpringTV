@@ -6,6 +6,7 @@ import by.zvor.springtv.DTO.FavouritesFromClient;
 import by.zvor.springtv.DTO.UnauthorizedUser;
 import by.zvor.springtv.DTO.UnregisteredUser;
 import by.zvor.springtv.Entity.FavouritesView;
+import by.zvor.springtv.Entity.HistoryView;
 import by.zvor.springtv.Security.JWTUtil;
 import by.zvor.springtv.Service.Interfaces.CommentsViewService;
 import by.zvor.springtv.Service.Interfaces.UserViewService;
@@ -128,5 +129,15 @@ public class UserController {
         return new ResponseEntity<>("Comment posted", HttpStatus.OK);
     }
 
+    @GetMapping(value = "/getHistory", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<HistoryView>> getUserHistory(@RequestHeader("Authorization") String bearerToken) throws SQLException, ClassNotFoundException {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String username = userDetails.getUsername();
 
+        var history = this.userService.getUserHistoryByUsername(username);
+        return new ResponseEntity<>(history, HttpStatus.OK);
+
+
+    }
 }

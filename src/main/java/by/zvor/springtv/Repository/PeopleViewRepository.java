@@ -1,11 +1,13 @@
 package by.zvor.springtv.Repository;
 
 import by.zvor.springtv.Entity.PeopleView;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -26,13 +28,15 @@ import java.util.Collection;
         values (directorName, photoId, 'director');
         end addDirector;*/
 
-public interface PeopleViewRepository extends JpaRepository<PeopleView, Integer> {
+@Repository
+public class PeopleViewRepository {
+    @Autowired
+    @Qualifier("AdminJdbcTemplate")
+    private JdbcTemplate jdbcTemplate;
 
     /* @Procedure(name = "findAllByProfession")*/
-    default Collection<PeopleView> findAllByProfession(@Param("ProfessionIn") String actor) throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public Collection<PeopleView> findAllByProfession(@Param("ProfessionIn") String actor) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         java.sql.CallableStatement stmt = con.prepareCall("{call findAllByProfession(?,?)}");
         stmt.setString(1, actor);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
@@ -47,44 +51,34 @@ public interface PeopleViewRepository extends JpaRepository<PeopleView, Integer>
             person.setPhotoId(rs.getLong("PHOTO_ID"));
             people.add(person);
         }
-        con.close();
         return people;
     }
 
     /*@Procedure(name = "addActor")*/
-    default void addActor(@Param("actorName") String name, @Param("photoId") Long photoId) throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public void addActor(@Param("actorName") String name, @Param("photoId") Long photoId) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         java.sql.CallableStatement stmt = con.prepareCall("{call addActor(?,?)}");
         stmt.setString(1, name);
         stmt.setLong(2, photoId);
         stmt.execute();
-        con.close();
     }
 
     /*@Procedure(name = "addDirector")*/
-    default void addDirector(@Param("directorName") String name, @Param("photoId") Long photoId) throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public void addDirector(@Param("directorName") String name, @Param("photoId") Long photoId) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         java.sql.CallableStatement stmt = con.prepareCall("{call addDirector(?,?)}");
         stmt.setString(1, name);
         stmt.setLong(2, photoId);
         stmt.execute();
-        con.close();
     }
 
     /*@Procedure(procedureName = "addActorToMovie")*/
-    default void addActorToMovie(@Param("actorId") Long actorId, @Param("movieId") Long movieId, @Param("RoleIn") String role) throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public void addActorToMovie(@Param("actorId") Long actorId, @Param("movieId") Long movieId, @Param("RoleIn") String role) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         java.sql.CallableStatement stmt = con.prepareCall("{call addActorToMovie(?,?,?)}");
         stmt.setLong(1, actorId);
         stmt.setLong(2, movieId);
         stmt.setString(3, role);
         stmt.execute();
-        con.close();
     }
 }

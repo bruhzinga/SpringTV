@@ -5,8 +5,10 @@ import by.zvor.springtv.DTO.FavouritesFromClient;
 import by.zvor.springtv.DTO.UnauthorizedUser;
 import by.zvor.springtv.DTO.UnregisteredUser;
 import by.zvor.springtv.Entity.FavouritesView;
+import by.zvor.springtv.Entity.HistoryView;
 import by.zvor.springtv.Entity.UsersView;
 import by.zvor.springtv.Repository.FavouritesViewRepository;
+import by.zvor.springtv.Repository.HistoryViewRepository;
 import by.zvor.springtv.Repository.UsersViewRepository;
 import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +25,16 @@ public class UserViewService {
     private final UsersViewRepository userRepository;
     private final FavouritesViewRepository favouritesRepository;
 
+    private final HistoryViewRepository historyRepository;
+
     private final StringEncryptor encryptor;
 
+
     @Autowired
-    public UserViewService(UsersViewRepository userRepository, FavouritesViewRepository favouritesRepository) {
+    public UserViewService(UsersViewRepository userRepository, FavouritesViewRepository favouritesRepository, HistoryViewRepository historyRepository) {
         this.userRepository = userRepository;
         this.favouritesRepository = favouritesRepository;
+        this.historyRepository = historyRepository;
         encryptor = new JasyptEncryptorConfig().getPasswordEncryptor();
     }
 
@@ -83,5 +89,9 @@ public class UserViewService {
     @Transactional(readOnly = true)
     public Long GetUserIdByUsername(String username) throws SQLException, ClassNotFoundException {
         return userRepository.GetUserIdByUsername(username);
+    }
+
+    public Collection<HistoryView> getUserHistoryByUsername(String username) throws SQLException, ClassNotFoundException {
+        return historyRepository.getUserHistoryByUsername(username);
     }
 }

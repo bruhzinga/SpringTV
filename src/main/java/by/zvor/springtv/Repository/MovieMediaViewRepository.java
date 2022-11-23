@@ -25,11 +25,14 @@ public interface MovieMediaViewRepository extends JpaRepository<MovieMediaView, 
         statement.execute();
         var resultSet = statement.getObject(2, java.sql.ResultSet.class);
         var movieMediaView = new MovieMediaView();
-        movieMediaView.setId(resultSet.getLong("ID"));
-        movieMediaView.setImageName(resultSet.getString("IMAGE_NAME"));
-        movieMediaView.setImage(resultSet.getBytes("IMAGE"));
-        movieMediaView.setVideoName(resultSet.getString("VIDEO_NAME"));
-        movieMediaView.setVideo(resultSet.getBytes("VIDEO"));
+        while (resultSet.next()) {
+            movieMediaView.setId(resultSet.getLong("ID"));
+            movieMediaView.setImageName(resultSet.getString("IMAGE_NAME"));
+            movieMediaView.setImage(resultSet.getBytes("IMAGE"));
+            movieMediaView.setVideoName(resultSet.getString("VIDEO_NAME"));
+            movieMediaView.setVideo(resultSet.getBytes("VIDEO"));
+        }
+
         con.close();
         return movieMediaView;
     }

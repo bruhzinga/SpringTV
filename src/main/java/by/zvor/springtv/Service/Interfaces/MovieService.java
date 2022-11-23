@@ -25,8 +25,8 @@ public class MovieService {
 
 
     @Transactional(readOnly = true)
-    public Collection<MoviesView> getAllMoviesWithoutMedia() throws SQLException, ClassNotFoundException {
-        return moviesViewRepository.getAllMoviesWithoutMedia();
+    public Collection<MoviesView> getAllMoviesWithoutMedia(int page) throws SQLException, ClassNotFoundException {
+        return moviesViewRepository.getAllMoviesWithoutMedia(page);
     }
 
     @Transactional(readOnly = true)
@@ -42,5 +42,13 @@ public class MovieService {
     @Transactional(readOnly = true)
     public Collection<MovieActorsView> getActorsByMovieId(long id) throws SQLException, ClassNotFoundException {
         return moviesViewRepository.getActorsByMovieId(id);
+    }
+
+    public void addNewMovie(String title, int year, String description, int directorId, int genreId, int videoId, int trailerId, int imageId) throws SQLException {
+        moviesViewRepository.addNewMovie(title, year, description, directorId, genreId, videoId, trailerId, imageId);
+    }
+
+    public Collection<MoviesView> getMoviesByActorId(long id) throws SQLException {
+        return moviesViewRepository.getMoviesByActorId(id);
     }
 }

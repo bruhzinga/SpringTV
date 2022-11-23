@@ -31,8 +31,8 @@ select f.id, m.title, u.username
 from FAVOURITES f
          join users u on f.user_id = u.id
          join movies m on f.movie_id = m.id;
-create view HISTORY_VIEW as
-select h.id, m.title, u.username
+create or replace view HISTORY_VIEW as
+select h.id, m.title, u.username, h.time
 from HISTORY h
          join users u on h.user_id = u.id
          join movies m on h.movie_id = m.id;
@@ -44,7 +44,7 @@ select m.id,
        v.video
 from movies m
          join images i on m.image_id = i.id
-         join videos v on m.trailer_id = v.id;
+         join videos v on m.VIDEO_ID = v.id;
 
 create view GENRES_VIEW as
 select g.id, g.name

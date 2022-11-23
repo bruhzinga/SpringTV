@@ -131,7 +131,6 @@ EXCEPTION
 end AddNewMovie;
 
 
-
 create or replace procedure findAllByProfession(professionIn IN varchar2, result OUT SYS_REFCURSOR) is
 begin
     Open result for select * from PEOPLE_VIEW where professionIn = profession;
@@ -230,3 +229,31 @@ begin
 end UpdateImageById;
 
 
+create or replace procedure getMoviesByActorId(actorId IN number, result OUT SYS_REFCURSOR) is
+begin
+    Open result for select *
+                    from MOVIES_VIEW
+                             join MOVIE_CASTS m on MOVIES_VIEW.ID = m.MOVIE_ID
+                    where m.ACTOR_ID = actorId;
+end getMoviesByActorId;
+
+create or replace procedure addHistory(userId IN number, movieId IN number) is
+begin
+    insert into HISTORY(USER_ID, MOVIE_ID)
+    values (userId, movieId);
+end addHistory;
+
+create or replace procedure getUserHistoryByUsername(name IN varchar2, result OUT SYS_REFCURSOR) is
+begin
+    Open result for select *
+                    from HISTORY_VIEW
+                    where USERNAME = name
+                    order by HISTORY_VIEW.TIME desc;
+end getUserHistoryByUsername;
+
+
+declare
+    tm date := SYSTIMESTAMP;
+begin
+    DBMS_OUTPUT.put_line(SYSTIMESTAMP);
+end;

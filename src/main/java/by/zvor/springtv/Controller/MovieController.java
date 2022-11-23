@@ -1,16 +1,19 @@
 package by.zvor.springtv.Controller;
 
 import by.zvor.springtv.DTO.MovieActorViewToUser;
+import by.zvor.springtv.DTO.MovieFromClient;
 import by.zvor.springtv.Entity.CommentsView;
 import by.zvor.springtv.Entity.MoviesView;
 import by.zvor.springtv.Service.Interfaces.CommentsViewService;
+import by.zvor.springtv.Service.Interfaces.HistoryViewService;
 import by.zvor.springtv.Service.Interfaces.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
@@ -23,16 +26,19 @@ public class MovieController {
     private final MovieService movieService;
     private final CommentsViewService commentsService;
 
+    private final HistoryViewService historyService;
+
 
     @Autowired
-    public MovieController(MovieService movieService, CommentsViewService commentsService) {
+    public MovieController(MovieService movieService, CommentsViewService commentsService, CommentsViewService commentsViewService, HistoryViewService historyService) {
         this.movieService = movieService;
         this.commentsService = commentsService;
+        this.historyService = historyService;
     }
 
-    @GetMapping(value = "allwithoutmedia", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<MoviesView>> getAllMoviesWithoutMedia() throws SQLException, ClassNotFoundException {
-        var movies = movieService.getAllMoviesWithoutMedia();
+    @GetMapping(value = "allwithoutmedia/{page}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<MoviesView>> getAllMoviesWithoutMedia(@PathVariable("page") int page) throws SQLException, ClassNotFoundException {
+        var movies = movieService.getAllMoviesWithoutMedia(page);
         return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
     }
 
@@ -42,17 +48,20 @@ public class MovieController {
     }
 
 
-    @GetMapping(value = "media/{id}", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<MultiValueMap<String, Object>> getMovieWithMediaById(@PathVariable("id") int id) throws SQLException, ClassNotFoundException {
-
+    @GetMapping(value = "video/{id}")
+    public ResponseEntity<byte[]> getMovieWithMediaById(@PathVariable("id") int id) throws SQLException, ClassNotFoundException {
         var movie = movieService.getMovieByIdWithMedia(id);
-        MultiValueMap<String, Object> formData = new LinkedMultiValueMap<String, Object>();
-        formData.add("ID", movie.getId());
-        formData.add("IMAGE_NAME", movie.getImageName());
-        formData.add("IMAGE", movie.getImage());
-        formData.add("VIDEO_NAME", movie.getVideoName());
-        formData.add("VIDEO", movie.getVideo());
-        return new ResponseEntity<MultiValueMap<String, Object>>(formData, HttpStatus.OK);
+        var video = movie.getVideo();
+        var videoName = movie.getVideoName();
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        String username = userDetails.getUsername();
+        historyService.addHistory(username, id);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("video/mp4"))
+                .header("Content-Disposition", "attachment; filename=\"" + videoName + "\"")
+                .body(video);
 
     }
 
@@ -68,5 +77,23 @@ public class MovieController {
         var comments = commentsService.getCommentsByMovieId(id);
         return new ResponseEntity<Collection<CommentsView>>(comments, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    //title, year,description, director, genre id ,director id,video id,trailer id,image id
+    public ResponseEntity<String> addNewMovie(@RequestBody MovieFromClient movie) throws SQLException, ClassNotFoundException {
+        /* movieService.addNewMovie(title, year, description, directorId, genreId, videoId, trailerId, imageId);*/
+        movieService.addNewMovie(movie.getTitle(), movie.getYear(), movie.getDescription(), movie.getDirectorId(), movie.getGenreId(), movie.getVideoId(), movie.getTrailerId(), movie.getImageId());
+        return new ResponseEntity<>("Movie added", HttpStatus.OK);
+    }
+/*TODO
+    @GetMapping(value = "search/{searchString}", produces = MediaType.APPLICATION_JSON_VALUE)*/
+
+    @GetMapping(value = "getmoviebyActor/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<MoviesView>> getMoviesByActorId(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
+        var movies = movieService.getMoviesByActorId(id);
+        return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
+    }
+
 
 }

@@ -111,13 +111,17 @@ call ADDNEWMOVIE('test2',
                  'test2',
                  2007, 11, 7, 3, 22, 2);
 
-call ADDNEWMOVIE('test3',
-                 'test3',
-                 2007, 11, 7, 3, 22, 2);
+call ADDNEWMOVIE('test100',
+                 'test1233',
+                 2007, 1, 10, 13, 22, 5);
+select *
+from movies
+where TITLE = 'jsadjsadj';
+delete
+from movies
+where TITLE = 'jsadjsadj';
 
-call ADDNEWMOVIE('ImageTEST',
-                 'img',
-                 2022, 34, 7, 3, 22, 2);
+
 
 begin
     for i in 10001..100000

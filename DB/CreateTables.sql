@@ -100,11 +100,13 @@ create table COMMENTS
     CONSTRAINT comments_fk2 FOREIGN KEY (movie_id) REFERENCES movies (id) on delete cascade
 );
 
+drop table HISTORY;
 create table HISTORY
 (
     id       number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
-    user_id  number(10) not null,
-    movie_id number(10) not null,
+    user_id  number(10)                      not null,
+    movie_id number(10)                      not null,
+    time     date default (sysdate + 3 / 24) not null,
     primary key (id),
     CONSTRAINT history_fk1 FOREIGN KEY (user_id) REFERENCES users (id) on delete cascade,
     CONSTRAINT history_fk2 FOREIGN KEY (movie_id) REFERENCES movies (id) on delete cascade
@@ -128,3 +130,4 @@ create table VIDEOS
     primary key (id),
     constraint video_name_uq unique (name, type)
 );
+
