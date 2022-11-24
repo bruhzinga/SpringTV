@@ -146,4 +146,26 @@ public class MoviesViewRepository {
         }
         return movies;
     }
+
+    public Collection<MoviesView> getMoviesByDirectorId(long id) throws SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
+        java.sql.CallableStatement stmt = con.prepareCall("{call getMoviesByDirectorId(?,?)}");
+        stmt.setLong(1, id);
+        stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
+        stmt.execute();
+        java.sql.ResultSet rs = (java.sql.ResultSet) stmt.getObject(2);
+        var movies = new java.util.ArrayList<MoviesView>();
+        while (rs.next()) {
+            var movie = new MoviesView();
+            movie.setId(rs.getInt("ID"));
+            movie.setTitle(rs.getString("TITLE"));
+            movie.setYear(rs.getShort("YEAR"));
+            movie.setDescription(rs.getString("DESCRIPTION"));
+            movie.setNumberOfViews(rs.getInt("NUMBER_OF_VIEWS"));
+            movie.setDirector(rs.getString("DIRECTOR"));
+            movie.setGenre(rs.getString("GENRE"));
+            movies.add(movie);
+        }
+        return movies;
+    }
 }

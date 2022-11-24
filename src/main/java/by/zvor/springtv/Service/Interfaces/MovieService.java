@@ -51,4 +51,9 @@ public class MovieService {
     public Collection<MoviesView> getMoviesByActorId(long id) throws SQLException {
         return moviesViewRepository.getMoviesByActorId(id);
     }
+
+    public Collection<MoviesView> getMoviesByDirectorId(long id) throws SQLException {
+        return moviesViewRepository.getMoviesByDirectorId(id);
+
+    }
 }

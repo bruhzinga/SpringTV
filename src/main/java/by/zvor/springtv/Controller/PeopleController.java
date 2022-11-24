@@ -57,11 +57,4 @@ public class PeopleController {
     }
 
 
-
-
-    /*@GetMapping(value = "actor/{id}/movies", produces = MediaType.APPLICATION_JSON_VALUE)//TODO*/
-
-    /*@GetMapping(value = "director/{id}/movies", produces = MediaType.APPLICATION_JSON_VALUE)//TODO*/
-
-
 }

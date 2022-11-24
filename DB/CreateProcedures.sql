@@ -39,6 +39,9 @@ create or replace procedure add_favourite(userID number, movieID number) is
 begin
     insert into favourites(USER_ID, MOVIE_ID)
     values (userID, movieID);
+exception
+    when dup_val_on_index then
+        raise_application_error(-20001, 'Movie already in favourites');
 end add_favourite;
 
 create or replace procedure delete_favourite(userID number, movieID number) is
@@ -47,12 +50,18 @@ begin
     from favourites
     where FAVOURITES.user_id = userId
       and movie_id = movieID;
+exception
+    when no_data_found then
+        raise_application_error(-20001, 'Movie not in favourites');
+
+
 end delete_favourite;
 
 create or replace procedure add_comment(userID number, movieID number, comment_text varchar2) is
 begin
     insert into comments(USER_ID, MOVIE_ID, "COMMENT")
     values (userID, movieID, comment_text);
+
 end add_comment;
 
 
@@ -71,6 +80,9 @@ create or replace procedure addGenre(genreName IN varchar2) is
 begin
     insert into genres(NAME)
     values (genreName);
+exception
+    when dup_val_on_index then
+        raise_application_error(-20001, 'Genre already exists');
 end addGenre;
 
 create or replace procedure deleteGenre(genreID IN number) is
@@ -78,6 +90,9 @@ begin
     delete
     from genres
     where genres.id = genreID;
+exception
+    when no_data_found then
+        raise_application_error(-20001, 'Genre not found');
 end deleteGenre;
 
 create or replace procedure AddNewImage(imageName IN varchar2, image IN BLOB, ImType IN varchar2) is
@@ -137,15 +152,28 @@ begin
 end findAllByProfession;
 
 create or replace procedure addActor(actorName IN varchar2, photoId IN number) is
+    photoType varchar2(20);
 begin
-    insert into people(NAME, PHOTO_ID, PROFESSION)
-    values (actorName, photoId, 'actor');
+    select "TYPE" into photoType from images where id = photoId;
+    if photoType = 'actor' then
+        insert into people(NAME, PROFESSION, PHOTO_ID)
+        values (actorName, 'actor', photoId);
+    else
+        raise_application_error(-20001, 'Photo ID is not actor');
+    end if;
 end addActor;
 
 create or replace procedure addDirector(directorName IN varchar2, photoId IN number) is
+    photoType varchar2(20);
 begin
-    insert into people(NAME, PHOTO_ID, PROFESSION)
-    values (directorName, photoId, 'director');
+    select "TYPE" into photoType from images where id = photoId;
+    if photoType = 'director' then
+        insert into people(NAME, PROFESSION, PHOTO_ID)
+        values (directorName, 'director', photoId);
+    else
+        raise_application_error(-20001, 'Photo ID is not director');
+    end if;
+
 end addDirector;
 
 create or replace procedure getAllMoviesWithoutMedia(result OUT SYS_REFCURSOR, page IN Number) is
@@ -204,11 +232,17 @@ begin
 end GetCommentsByMovieId;
 
 create or replace procedure GetPersonImagebyId(personId IN number, result OUT blob) is
+    peopleType varchar2(20);
 begin
-    select IMAGE
-    into result
-    from IMAGES
-    where ID = personId;
+    select "TYPE" into peopleType from IMAGES where id = personId;
+    if peopleType = 'director' or peopleType = 'actor' then
+        select IMAGE
+        into result
+        from IMAGES
+        where ID = personId;
+    else
+        raise_application_error(-20001, 'Person ID is not actor or director');
+    end if;
 end GetPersonImagebyId;
 
 create or replace procedure DeleteImageById(imageId IN number) is
@@ -237,6 +271,14 @@ begin
                     where m.ACTOR_ID = actorId;
 end getMoviesByActorId;
 
+create or replace procedure getMoviesByDirectorId(directorID IN number, result OUT SYS_REFCURSOR) is
+begin
+    Open result for select *
+                    from MOVIES_VIEW
+                             join people on people.NAME = movies_view.DIRECTOR
+                    where people.ID = directorID;
+end getMoviesByDirectorId;
+
 create or replace procedure addHistory(userId IN number, movieId IN number) is
 begin
     insert into HISTORY(USER_ID, MOVIE_ID)
@@ -252,8 +294,6 @@ begin
 end getUserHistoryByUsername;
 
 
-declare
-    tm date := SYSTIMESTAMP;
-begin
-    DBMS_OUTPUT.put_line(SYSTIMESTAMP);
-end;
+
+
+

@@ -12,8 +12,6 @@ import javax.persistence.Table;
 /**
  * Mapping for DB view
  */
-
-
 @Getter
 @Setter
 @Entity
@@ -35,6 +33,12 @@ public class MovieMediaView {
 
     @Column(name = "VIDEO", nullable = false)
     private byte[] video;
+
+    @Column(name = "TRAILER_NAME", nullable = false, length = 50)
+    private String trailerName;
+
+    @Column(name = "TRAILER_VIDEO", nullable = false)
+    private byte[] trailerVideo;
 
     public MovieMediaView() {
     }

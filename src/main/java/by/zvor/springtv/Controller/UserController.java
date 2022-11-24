@@ -92,11 +92,7 @@ public class UserController {
                 .getPrincipal();
         String username = userDetails.getUsername();
         var userId = this.userService.GetUserIdByLogin(username);
-        try {
-            this.userService.addFavoriteToUser(favouritesFromClient, userId);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Error adding favourite", HttpStatus.BAD_REQUEST);
-        }
+        this.userService.addFavoriteToUser(favouritesFromClient, userId);
         return new ResponseEntity<>("Favourite added", HttpStatus.OK);
 
 

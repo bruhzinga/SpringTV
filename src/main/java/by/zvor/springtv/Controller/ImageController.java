@@ -55,4 +55,5 @@ public class ImageController {
         return new ResponseEntity<>(imagesService.getPersonImage(id), HttpStatus.OK);
     }
 
+
 }

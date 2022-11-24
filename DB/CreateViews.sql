@@ -38,13 +38,16 @@ from HISTORY h
          join movies m on h.movie_id = m.id;
 create or replace view MOVIE_MEDIA_VIEW as
 select m.id,
-       i.name as image_name,
+       i.name  as image_name,
        i.image,
-       v.name as video_name,
-       v.video
+       v.name  as video_name,
+       v.video,
+       t.NAME  as trailer_name,
+       t.VIDEO as trailer_video
 from movies m
          join images i on m.image_id = i.id
-         join videos v on m.VIDEO_ID = v.id;
+         join videos v on m.VIDEO_ID = v.id
+         join VIDEOS t on m.trailer_id = t.id;
 
 create view GENRES_VIEW as
 select g.id, g.name

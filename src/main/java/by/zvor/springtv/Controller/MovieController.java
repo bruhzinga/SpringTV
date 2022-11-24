@@ -65,6 +65,18 @@ public class MovieController {
 
     }
 
+    @GetMapping("trailer/{id}")
+    public ResponseEntity<byte[]> getMovieTrailerById(@PathVariable("id") int id) throws SQLException, ClassNotFoundException {
+        var movie = movieService.getMovieByIdWithMedia(id);
+        var trailer = movie.getTrailerVideo();
+        var trailerName = movie.getTrailerName();
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("video/mp4"))
+                .header("Content-Disposition", "attachment; filename=\"" + trailerName + "\"")
+                .body(trailer);
+    }
+
+
     @GetMapping(value = "{id}/actors", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<MovieActorViewToUser>> getActorsByMovieId(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
         var actors = movieService.getActorsByMovieId(id);
@@ -89,9 +101,15 @@ public class MovieController {
 /*TODO
     @GetMapping(value = "search/{searchString}", produces = MediaType.APPLICATION_JSON_VALUE)*/
 
-    @GetMapping(value = "getmoviebyActor/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "getmoviesbyActor/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<MoviesView>> getMoviesByActorId(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
         var movies = movieService.getMoviesByActorId(id);
+        return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "getmoviesbyDirector/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<MoviesView>> getMoviesByDirectorId(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
+        var movies = movieService.getMoviesByDirectorId(id);
         return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
     }
 
