@@ -1,11 +1,12 @@
 package by.zvor.springtv.Repository;
 
 import by.zvor.springtv.Entity.MovieMediaView;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 /*create or replace procedure getMovieByIdWithMedia(movieId IN number, result OUT SYS_REFCURSOR) is
         begin
@@ -13,12 +14,15 @@ import java.sql.SQLException;
         end getMovieByIdWithMedia;*/
 
 
-public interface MovieMediaViewRepository extends JpaRepository<MovieMediaView, Integer> {
+public class MovieMediaViewRepository {
     /* @Procedure(name = "getMovieByIdWithMedia")*/
-    default MovieMediaView getMovieByIdWithMedia(@Param("movieId") int id) throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+
+    @Autowired
+    @Qualifier("AdminJdbcTemplate")
+    private JdbcTemplate jdbcTemplate;
+
+    public MovieMediaView getMovieByIdWithMedia(@Param("movieId") int id) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         var statement = con.prepareCall("{call getMovieByIdWithMedia(?,?)}");
         statement.setInt(1, id);
         statement.registerOutParameter(2, java.sql.Types.REF_CURSOR);
@@ -35,7 +39,7 @@ public interface MovieMediaViewRepository extends JpaRepository<MovieMediaView, 
             movieMediaView.setTrailerVideo(resultSet.getBytes("TRAILER_VIDEO"));
         }
 
-        con.close();
+       
         return movieMediaView;
     }
 }

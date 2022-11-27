@@ -83,9 +83,7 @@ public class UsersViewRepository {
         stmt.setString(1, login);
         stmt.registerOutParameter(2, java.sql.Types.VARCHAR);
         stmt.execute();
-        String password = stmt.getString(2);
-
-        return password;
+        return stmt.getString(2);
     }
 
 

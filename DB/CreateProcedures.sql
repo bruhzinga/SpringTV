@@ -21,19 +21,20 @@ end getUserById;
 create or replace procedure GetUserIdByUsername(InUserName IN varchar2, outID OUT number) is
 begin
     select id into outID from users where username = InUserName;
-    if outID is null then
+exception
+    when no_data_found then
         raise_application_error(-20001, 'User not found');
-    end if;
 end GetUserIdByUsername;
 
 
 create or replace procedure GetUserEncryptedPasswordByLogin(InUserName IN varchar2, password OUT varchar2) is
 begin
     select password_hash into password from users where username = InUserName;
-    if password is null then
+exception
+    when no_data_found then
         raise_application_error(-20001, 'User not found');
-    end if;
 end GetUserEncryptedPasswordByLogin;
+
 
 create or replace procedure add_favourite(userID number, movieID number) is
 begin
@@ -115,34 +116,47 @@ create or replace procedure AddNewMovie(movieName IN varchar2, movieDescription 
     videoType   VIDEOS.TYPE%TYPE;
     trailerType VIDEOS.TYPE%TYPE;
     peopleType  PEOPLE.PROFESSION%TYPE;
+    genre       GENRES.NAME%TYPE;
 begin
-    select "TYPE" into imageType from images where id = ImageID;
-    select "TYPE" into videoType from videos where id = VideoID;
-    select "TYPE" into trailerType from videos where id = TrailerID;
-    select "PROFESSION" into peopleType from people where id = DirectorID;
-    if imageType = 'movie' then
-        if videoType = 'movie' then
-            if trailerType = 'trailer' then
-                if peopleType = 'director' then
-                    insert into movies(TITLE, DESCRIPTION, YEAR, IMAGE_ID, VIDEO_ID, GENRE_ID, DIRECTOR_ID, TRAILER_ID)
-                    values (movieName, movieDescription, movieYear, ImageID, VideoID, GenreID, DirectorID, TrailerID);
-                else
-                    raise_application_error(-20001, 'Director ID is not correct');
-                end if;
-            else
-                raise_application_error(-20001, 'Trailer ID is not correct');
-            end if;
-        else
-            raise_application_error(-20001, 'Video ID is not correct');
-        end if;
-    else
-        raise_application_error(-20001, 'Image ID is not correct');
+    select (select "TYPE" from images where id = ImageID) into imageType from dual;
+    if imageType is null then
+        raise_application_error(-20001, 'Image not found');
+    end if;
+    select (select "TYPE" from videos where id = VideoID) into videoType from dual;
+    if videoType is null then
+        raise_application_error(-20001, 'Video not found');
+    end if;
+    select (select "TYPE" from videos where id = TrailerID) into trailerType from dual;
+    if trailerType is null then
+        raise_application_error(-20001, 'Trailer not found');
+    end if;
+    select (select profession from people where id = DirectorID) into peopleType from dual;
+    if peopleType is null then
+        raise_application_error(-20001, 'Director not found');
     end if;
 
-EXCEPTION
-    WHEN NO_DATA_FOUND
-        THEN
-            raise_application_error(-20001, 'Non existent ID');
+    select (select name from genres where id = GenreID) into genre from dual;
+    if genre is null then
+        raise_application_error(-20001, 'Genre not found');
+    end if;
+
+
+    if imageType != 'movie' then
+        raise_application_error(-20001, 'Image is not an movie image');
+    end if;
+    if videoType != 'movie' then
+        raise_application_error(-20001, 'Video is not an movie video');
+    end if;
+    if trailerType != 'trailer' then
+        raise_application_error(-20001, 'Trailer is not an movie trailer');
+    end if;
+
+    if peopleType != 'director' then
+        raise_application_error(-20001, 'Person is not a director');
+    end if;
+
+    insert into movies(TITLE, DESCRIPTION, YEAR, IMAGE_ID, VIDEO_ID, GENRE_ID, DIRECTOR_ID, TRAILER_ID)
+    values (movieName, movieDescription, movieYear, ImageID, VideoID, GenreID, DirectorID, TrailerID);
 end AddNewMovie;
 
 
@@ -189,6 +203,7 @@ end getAllMoviesWithoutMedia;
 create or replace procedure getMovieByIdWithMedia(movieId IN number, result OUT SYS_REFCURSOR) is
 begin
     Open result for select * from MOVIE_MEDIA_VIEW where ID = movieId;
+
 end getMovieByIdWithMedia;
 
 create or replace procedure getMovieByIdWithoutMedia(movieId IN number, result OUT SYS_REFCURSOR) is
@@ -264,11 +279,17 @@ end UpdateImageById;
 
 
 create or replace procedure getMoviesByActorId(actorId IN number, result OUT SYS_REFCURSOR) is
+    existActor varchar2(20);
 begin
+    --check if id exists
+    select (select ID from people where id = actorId) into existActor from dual;
+    if actorId is null then
+        raise_application_error(-20001, 'Actor not found');
+    end if;
     Open result for select *
-                    from MOVIES_VIEW
-                             join MOVIE_CASTS m on MOVIES_VIEW.ID = m.MOVIE_ID
-                    where m.ACTOR_ID = actorId;
+                    from MOVIE_ACTORS_VIEW
+                    where ACTOR_ID = actorId;
+
 end getMoviesByActorId;
 
 create or replace procedure getMoviesByDirectorId(directorID IN number, result OUT SYS_REFCURSOR) is
@@ -277,6 +298,9 @@ begin
                     from MOVIES_VIEW
                              join people on people.NAME = movies_view.DIRECTOR
                     where people.ID = directorID;
+    if result%rowcount = 0 then
+        raise_application_error(-20001, 'Director ID is not correct');
+    end if;
 end getMoviesByDirectorId;
 
 create or replace procedure addHistory(userId IN number, movieId IN number) is

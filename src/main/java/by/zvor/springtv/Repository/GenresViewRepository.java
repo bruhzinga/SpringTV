@@ -1,12 +1,13 @@
 package by.zvor.springtv.Repository;
 
 import by.zvor.springtv.Entity.GenresView;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,13 +30,14 @@ import java.util.Collection;
         end deleteGenre;*/
 
 @Repository
-public interface GenresViewRepository extends JpaRepository<GenresView, Integer> {
+public class GenresViewRepository {
+    @Autowired
+    @Qualifier("AdminJdbcTemplate")
+    private JdbcTemplate jdbcTemplate;
 
     /* @Procedure(name = "getAllGenres")*/
-    default Collection<GenresView> getAllGenres() throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public Collection<GenresView> getAllGenres() throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         var statement = con.prepareCall("{call getAllGenres(?)}");
         statement.registerOutParameter(1, java.sql.Types.REF_CURSOR);
         statement.execute();
@@ -47,30 +49,26 @@ public interface GenresViewRepository extends JpaRepository<GenresView, Integer>
             genresView.setName(resultSet.getString("NAME"));
             arrayList.add(genresView);
         }
-        con.close();
+       
         return arrayList;
 
     }
 
     /*@Procedure(name = "addGenre")*/
-    default void addGenre(String genreName) throws SQLException, ClassNotFoundException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public void addGenre(String genreName) throws SQLException, ClassNotFoundException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         var statement = con.prepareCall("{call addGenre(?)}");
         statement.setString(1, genreName);
         statement.execute();
-        con.close();
+       
     }
 
     /* @Procedure(name = "deleteGenre")*/
-    default void deleteGenre(@Param("genreID") Long id) throws SQLException, ClassNotFoundException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public void deleteGenre(@Param("genreID") Long id) throws SQLException, ClassNotFoundException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         var statement = con.prepareCall("{call deleteGenre(?)}");
         statement.setLong(1, id);
         statement.execute();
-        con.close();
+       
     }
 }

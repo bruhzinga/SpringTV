@@ -108,20 +108,15 @@ public class UserController {
         return new ResponseEntity<>("Favourite deleted", HttpStatus.OK);
     }
 
-    //TODO MAYBE REDO TO TAKE ID PARAMETER FROM URL
-    @PostMapping(value = "/PostComment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> PostComment(@RequestBody final CommentFromUser comment) throws SQLException, ClassNotFoundException {
+    @PostMapping(value = "/PostComment/{movieId]", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> PostComment(@RequestBody final CommentFromUser comment, @RequestPart("movieId") long movieId) throws SQLException, ClassNotFoundException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
+
         var userId = this.userService.GetUserIdByLogin(username);
-        try {
-            this.commentsService.postComment(comment, userId);
-        } catch (final SQLException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        comment.setFilmId(movieId);
+        this.commentsService.postComment(comment, userId);
         return new ResponseEntity<>("Comment posted", HttpStatus.OK);
     }
 

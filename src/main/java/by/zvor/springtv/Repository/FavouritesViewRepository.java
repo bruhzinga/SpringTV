@@ -1,11 +1,12 @@
 package by.zvor.springtv.Repository;
 
 import by.zvor.springtv.Entity.FavouritesView;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,14 +28,15 @@ import java.util.Collection;
         where FAVOURITES.user_id = userId
         and movie_id = movieID;
         end delete_favourite;*/
-public interface FavouritesViewRepository extends JpaRepository<FavouritesView, Integer> {
+public class FavouritesViewRepository {
 
+    @Autowired
+    @Qualifier("AdminJdbcTemplate")
+    private JdbcTemplate jdbcTemplate;
 
     /* @Procedure(name = "getUserFavouritesByUsername")*/
-    default Collection<FavouritesView> getUserFavouritesByUsername(@Param("UserUsername") String username) throws ClassNotFoundException, SQLException {
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public Collection<FavouritesView> getUserFavouritesByUsername(@Param("UserUsername") String username) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         var statement = con.prepareCall("{call getUserFavouritesByUsername(?,?)}");
         statement.setString(1, username);
         statement.registerOutParameter(2, java.sql.Types.REF_CURSOR);
@@ -48,35 +50,30 @@ public interface FavouritesViewRepository extends JpaRepository<FavouritesView, 
             favouritesView.setUsername(resultSet.getString("USERNAME"));
             arrayList.add(favouritesView);
         }
-        con.close();
+       
         return arrayList;
     }
 
     /*@Procedure(procedureName = "add_favourite")*/
-    default void addFavouriteToUser(@Param("userID") Long userId, @Param("movieID") Long filmId) throws ClassNotFoundException, SQLException {
-
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+    public void addFavouriteToUser(@Param("userID") Long userId, @Param("movieID") Long filmId) throws ClassNotFoundException, SQLException {
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         var statement = con.prepareCall("{call add_favourite(?,?)}");
         statement.setLong(1, userId);
         statement.setLong(2, filmId);
         statement.execute();
-        con.close();
+       
 
     }
 
     /*  @Procedure(procedureName = "delete_favourite")*/
-    default void deleteFavouriteFromUser(@Param("userID") Long userId, @Param("movieID") Long filmId) throws ClassNotFoundException, SQLException {
+    public void deleteFavouriteFromUser(@Param("userID") Long userId, @Param("movieID") Long filmId) throws ClassNotFoundException, SQLException {
 
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        Connection con = DriverManager.getConnection(
-                "jdbc:oracle:thin:@localhost:1521:xe", "SpringTVAdmin", "9");
+        Connection con = jdbcTemplate.getDataSource().getConnection();
         var statement = con.prepareCall("{call delete_favourite(?,?)}");
         statement.setLong(1, userId);
         statement.setLong(2, filmId);
         statement.execute();
-        con.close();
+       
 
     }
 
