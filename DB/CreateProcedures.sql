@@ -10,6 +10,7 @@ EXCEPTION
 end REGISTER_USER;
 
 
+
 create or replace procedure getUserById(userId IN number, result OUT sys_refcursor) is
 begin
     open result for
@@ -218,7 +219,7 @@ begin
     if actor != 'actor' then
         raise_application_error(-20001, 'Actor ID is not correct');
     end if;
-    insert into MOVIE_CASTS(MOVIE_ID, ACTOR_ID, "Role")
+    insert into MOVIE_CASTS(MOVIE_ID, ACTOR_ID, "ROLE")
     values (movieId, actorId, RoleIn);
 end addActorToMovie;
 

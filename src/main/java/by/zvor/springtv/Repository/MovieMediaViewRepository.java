@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,6 +15,7 @@ import java.sql.SQLException;
         end getMovieByIdWithMedia;*/
 
 
+@Repository
 public class MovieMediaViewRepository {
     /* @Procedure(name = "getMovieByIdWithMedia")*/
 
@@ -39,7 +41,7 @@ public class MovieMediaViewRepository {
             movieMediaView.setTrailerVideo(resultSet.getBytes("TRAILER_VIDEO"));
         }
 
-       
+
         return movieMediaView;
     }
 }

@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
+@Repository
 public class ImagesViewRepository {
 
     @Autowired
@@ -21,7 +23,7 @@ public class ImagesViewRepository {
         statement.setBytes(2, image);
         statement.setString(3, type);
         statement.execute();
-       
+
     }
 
     public byte[] getThumbnail(Long movieId) throws ClassNotFoundException, SQLException {
@@ -32,7 +34,7 @@ public class ImagesViewRepository {
         stmt.execute();
         java.sql.Blob blob = stmt.getBlob(2);
         var image = blob.getBytes(1, (int) blob.length());
-       
+
         return image;
     }
 
@@ -44,7 +46,7 @@ public class ImagesViewRepository {
         stmt.execute();
         java.sql.Blob blob = stmt.getBlob(2);
         var image = blob.getBytes(1, (int) blob.length());
-       
+
         return image;
     }
 
@@ -53,7 +55,6 @@ public class ImagesViewRepository {
         var statement = con.prepareCall("{call DeleteImageById(?)}");
         statement.setLong(1, id);
         statement.execute();
-       
 
 
     }
@@ -66,7 +67,7 @@ public class ImagesViewRepository {
         statement.setBytes(3, image);
         statement.setString(4, type);
         statement.execute();
-       
+
 
     }
 }

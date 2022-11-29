@@ -1,4 +1,5 @@
 --create all views
+ALTER SESSION SET CONTAINER = SpringTV;
 create view USERS_VIEW as
 select u.id, u.username, u.password_hash, u.email, r.name as role
 from users u
@@ -72,11 +73,9 @@ select mc.id,
        m.TITLE,
        p.id as actor_id,
        p.name,
-       I.ID as image_id,
-       mc."Role"
-
+       I.ID as image_id
 from MOVIE_CASTS mc
          join people p on mc.actor_id = p.id
          join movies m on mc.movie_id = m.id
-         join IMAGES I on p.PHOTO_ID = I.ID
+         join IMAGES I on p.PHOTO_ID = I.ID;
 

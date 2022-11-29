@@ -1,8 +1,9 @@
-Create user SpringTVAdmin identified by "9";
-grant resource, connect to SpringTVAdmin;
-alter user SpringTVAdmin QUOTA UNLIMITED ON USERS;
-grant create view to SpringTVAdmin;
-
+create table ROLES
+(
+    id   number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
+    name varchar2(50) not null unique,
+    primary key (id)
+);
 
 
 create table USERS
@@ -13,15 +14,44 @@ create table USERS
     role_id       number(10)   not null,
     email         varchar2(50) not null unique,
     constraint users_pk primary key (id),
-    constraint user_fk foreign key (role_id) references roles (id) on delete cascade
+    constraint user_fk foreign key (role_id) references roles (id) on delete cascade,
+    constraint correct_email check (REGEXP_LIKE(email, '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'))
 );
-
-create table ROLES
+create table IMAGES
+(
+    id    number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
+    name  varchar2(50) not null,
+    IMAGE BLOB         not null,
+    type  varchar2(50) not null check ( type in ('movie', 'actor', 'director') ),
+    primary key (id),
+    constraint image_name_uq unique (name, type)
+);
+create table PEOPLE
+(
+    id         number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
+    name       varchar2(50) not null,
+    photo_id   number(10)   not null,
+    profession varchar2(50) not null check ( profession in ('actor', 'director') ),
+    primary key (id),
+    constraint actor_fk1 foreign key (photo_id) references images (id) on delete cascade,
+    constraint actor_name_uq unique (name, profession)
+);
+create table GENRES
 (
     id   number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
     name varchar2(50) not null unique,
     primary key (id)
 );
+create table VIDEOS
+(
+    id    number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
+    name  varchar2(50) not null,
+    VIDEO BLOB         not null,
+    type  varchar2(50) not null check ( type in ('trailer', 'movie') ),
+    primary key (id),
+    constraint video_name_uq unique (name, type)
+);
+
 
 create table MOVIES
 (
@@ -60,24 +90,6 @@ create table MOVIE_CASTS
 
 
 
-create table PEOPLE
-(
-    id         number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
-    name       varchar2(50) not null,
-    photo_id   number(10)   not null,
-    profession varchar2(50) not null check ( profession in ('actor', 'director') ),
-    primary key (id),
-    COnstraint actor_fk1 foreign key (photo_id) references images (id) on delete cascade,
-    constraint actor_name_uq unique (name, profession)
-);
-
-create table GENRES
-(
-    id   number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
-    name varchar2(50) not null unique,
-    primary key (id)
-);
-
 create table FAVOURITES
 (
     id       number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
@@ -100,7 +112,6 @@ create table COMMENTS
     CONSTRAINT comments_fk2 FOREIGN KEY (movie_id) REFERENCES movies (id) on delete cascade
 );
 
-drop table HISTORY;
 create table HISTORY
 (
     id       number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
@@ -112,22 +123,6 @@ create table HISTORY
     CONSTRAINT history_fk2 FOREIGN KEY (movie_id) REFERENCES movies (id) on delete cascade
 );
 
-create table IMAGES
-(
-    id    number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
-    name  varchar2(50) not null,
-    IMAGE BLOB         not null,
-    type  varchar2(50) not null check ( type in ('movie', 'actor', 'director') ),
-    primary key (id),
-    constraint image_name_uq unique (name, type)
-);
-create table VIDEOS
-(
-    id    number(10) GENERATED ALWAYS as IDENTITY (START with 1 INCREMENT by 1),
-    name  varchar2(50) not null,
-    VIDEO BLOB         not null,
-    type  varchar2(50) not null check ( type in ('trailer', 'movie') ),
-    primary key (id),
-    constraint video_name_uq unique (name, type)
-);
+
+
 

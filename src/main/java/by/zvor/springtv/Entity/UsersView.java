@@ -7,37 +7,6 @@ import org.hibernate.annotations.Immutable;
 import javax.persistence.*;
 
 
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(
-                name = "getUserById",
-                procedureName = "getUserById",
-                resultClasses = UsersView.class,
-                parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, name = "userId", type = Long.class),
-                        @StoredProcedureParameter(mode = ParameterMode.REF_CURSOR, name = "result", type = void.class),
-                }
-        ),
-        @NamedStoredProcedureQuery(
-                name = "GetUserIdByUsername",
-                procedureName = "GetUserIdByUsername",
-                parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, name = "InUserName", type = String.class),
-                        @StoredProcedureParameter(mode = ParameterMode.OUT, name = "outID", type = Long.class),
-                }
-        ),
-        @NamedStoredProcedureQuery(
-                name = "GetUserEncryptedPasswordByLogin",
-                procedureName = "GetUserEncryptedPasswordByLogin",
-                parameters = {
-                        @StoredProcedureParameter(mode = ParameterMode.IN, name = "InUserName", type = String.class),
-                        @StoredProcedureParameter(mode = ParameterMode.OUT, name = "password", type = String.class),
-                }
-
-        )})
-
-/**
- * Mapping for DB view
- */
 @Getter
 @Setter
 @Entity

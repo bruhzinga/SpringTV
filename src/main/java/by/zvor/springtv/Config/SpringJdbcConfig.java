@@ -14,22 +14,33 @@ public class SpringJdbcConfig {
     public DataSource OracleDataSourceAdmin() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
-        dataSource.setUrl("jdbc:oracle:thin:@localhost:1521:xe");
+        dataSource.setUrl("jdbc:oracle:thin:@//localhost:1521/SpringTV");
         dataSource.setUsername("SpringTVAdmin");
-        dataSource.setPassword("9");
+        dataSource.setPassword("qwerty");
         return dataSource;
     }
+
+    @Bean
+    public DataSource OracleDataSourceUser() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+        dataSource.setUrl("jdbc:oracle:thin:@//localhost:1521/SpringTV");
+        dataSource.setUsername("SpringTVUser");
+        dataSource.setPassword("qwerty");
+        return dataSource;
+    }
+
 
     @Bean
     public JdbcTemplate AdminJdbcTemplate(@Qualifier("OracleDataSourceAdmin") DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 
-   /* //TODO
+
     @Bean
-    public JdbcTemplate UserJdbcTemplate(@Qualifier("topicsDataSource") DataSource dataSource) {
+    public JdbcTemplate UserJdbcTemplate(@Qualifier("OracleDataSourceUser") DataSource dataSource) {
         return new JdbcTemplate(dataSource);
-    }*/
+    }
 
 
 }

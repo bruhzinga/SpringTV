@@ -41,12 +41,16 @@ public class UsersViewRepository {
 
     @Autowired
     @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplateAdmin;
+
+    @Autowired
+    @Qualifier("UserJdbcTemplate")
+    private JdbcTemplate jdbcTemplateUser;
 
     /*@Procedure(name = "getUserById")*/
     public UsersView getUserById(@Param("userId") Long id) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call getUserById(?,?)}");
+        Connection con = jdbcTemplateUser.getDataSource().getConnection();
+        java.sql.CallableStatement stmt = con.prepareCall("{call UserPackage.getUserById(?,?)}");
         stmt.setLong(1, id);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         stmt.execute();
@@ -66,8 +70,8 @@ public class UsersViewRepository {
     /* @Procedure(name = "GetUserIdByUsername")*/
 
     public Long GetUserIdByUsername(@Param("InUserName") String login) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call GetUserIdByUsername(?,?)}");
+        Connection con = jdbcTemplateUser.getDataSource().getConnection();
+        java.sql.CallableStatement stmt = con.prepareCall("{call UserPackage.GetUserIdByUsername(?,?)}");
         stmt.setString(1, login);
         stmt.registerOutParameter(2, java.sql.Types.NUMERIC);
         stmt.execute();
@@ -78,8 +82,8 @@ public class UsersViewRepository {
 
     /*@Procedure(name = "GetUserEncryptedPasswordByLogin")*/
     public String GetUserEncryptedPasswordByLogin(@Param("InUserName") String login) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call GetUserEncryptedPasswordByLogin(?,?)}");
+        Connection con = jdbcTemplateUser.getDataSource().getConnection();
+        java.sql.CallableStatement stmt = con.prepareCall("{call UserPackage.GetUserEncryptedPasswordByLogin(?,?)}");
         stmt.setString(1, login);
         stmt.registerOutParameter(2, java.sql.Types.VARCHAR);
         stmt.execute();
@@ -89,8 +93,8 @@ public class UsersViewRepository {
 
     /*   @Procedure(procedureName = "REGISTER_USER")*/
     public void saveUser(@Param("user_login") String login, @Param("user_password") String password, @Param("user_email") String email, @Param("user_role_id") Long id) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call REGISTER_USER(?,?,?,?)}");
+        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
+        var statement = con.prepareCall("{call ADMINPACKAGE.REGISTER_USER(?,?,?,?)}");
         statement.setString(1, login);
         statement.setString(2, password);
         statement.setString(3, email);

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,6 +29,7 @@ import java.util.Collection;
         where FAVOURITES.user_id = userId
         and movie_id = movieID;
         end delete_favourite;*/
+@Repository
 public class FavouritesViewRepository {
 
     @Autowired
@@ -50,7 +52,7 @@ public class FavouritesViewRepository {
             favouritesView.setUsername(resultSet.getString("USERNAME"));
             arrayList.add(favouritesView);
         }
-       
+
         return arrayList;
     }
 
@@ -61,7 +63,7 @@ public class FavouritesViewRepository {
         statement.setLong(1, userId);
         statement.setLong(2, filmId);
         statement.execute();
-       
+
 
     }
 
@@ -73,7 +75,7 @@ public class FavouritesViewRepository {
         statement.setLong(1, userId);
         statement.setLong(2, filmId);
         statement.execute();
-       
+
 
     }
 
