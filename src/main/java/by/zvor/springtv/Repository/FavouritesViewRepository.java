@@ -34,12 +34,16 @@ public class FavouritesViewRepository {
 
     @Autowired
     @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplateAdmin;
+
+    @Autowired
+    @Qualifier("UserJdbcTemplate")
+    private JdbcTemplate jdbcTemplateUser;
 
     /* @Procedure(name = "getUserFavouritesByUsername")*/
     public Collection<FavouritesView> getUserFavouritesByUsername(@Param("UserUsername") String username) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call getUserFavouritesByUsername(?,?)}");
+        Connection con = jdbcTemplateUser.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getUserFavouritesByUsername(?,?)}");
         statement.setString(1, username);
         statement.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         statement.execute();
@@ -58,8 +62,8 @@ public class FavouritesViewRepository {
 
     /*@Procedure(procedureName = "add_favourite")*/
     public void addFavouriteToUser(@Param("userID") Long userId, @Param("movieID") Long filmId) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call add_favourite(?,?)}");
+        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addFavourite(?,?)}");
         statement.setLong(1, userId);
         statement.setLong(2, filmId);
         statement.execute();
@@ -70,8 +74,8 @@ public class FavouritesViewRepository {
     /*  @Procedure(procedureName = "delete_favourite")*/
     public void deleteFavouriteFromUser(@Param("userID") Long userId, @Param("movieID") Long filmId) throws ClassNotFoundException, SQLException {
 
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call delete_favourite(?,?)}");
+        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.deleteFavourite(?,?)}");
         statement.setLong(1, userId);
         statement.setLong(2, filmId);
         statement.execute();

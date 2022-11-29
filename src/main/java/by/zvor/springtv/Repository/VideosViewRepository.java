@@ -17,7 +17,7 @@ public class VideosViewRepository {
 
     public void addNewVideo(@Param("videoName") String name, @Param("video") byte[] video, @Param("videoType") String type) throws ClassNotFoundException, SQLException {
         Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call AddNewVideo(?,?,?)}");
+        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.AddNewVideo(?,?,?)}");
         statement.setString(1, name);
         statement.setBytes(2, video);
         statement.setString(3, type);

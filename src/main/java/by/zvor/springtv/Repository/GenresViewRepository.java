@@ -33,12 +33,16 @@ import java.util.Collection;
 public class GenresViewRepository {
     @Autowired
     @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplateAdmin;
+
+    @Autowired
+    @Qualifier("UserJdbcTemplate")
+    private JdbcTemplate jdbcTemplateUser;
 
     /* @Procedure(name = "getAllGenres")*/
     public Collection<GenresView> getAllGenres() throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call getAllGenres(?)}");
+        Connection con = jdbcTemplateUser.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getAllGenres(?)}");
         statement.registerOutParameter(1, java.sql.Types.REF_CURSOR);
         statement.execute();
         var resultSet = statement.getObject(1, java.sql.ResultSet.class);
@@ -49,26 +53,26 @@ public class GenresViewRepository {
             genresView.setName(resultSet.getString("NAME"));
             arrayList.add(genresView);
         }
-       
+
         return arrayList;
 
     }
 
     /*@Procedure(name = "addGenre")*/
     public void addGenre(String genreName) throws SQLException, ClassNotFoundException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call addGenre(?)}");
+        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addGenre(?)}");
         statement.setString(1, genreName);
         statement.execute();
-       
+
     }
 
     /* @Procedure(name = "deleteGenre")*/
     public void deleteGenre(@Param("genreID") Long id) throws SQLException, ClassNotFoundException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call deleteGenre(?)}");
+        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.deleteGenre(?)}");
         statement.setLong(1, id);
         statement.execute();
-       
+
     }
 }

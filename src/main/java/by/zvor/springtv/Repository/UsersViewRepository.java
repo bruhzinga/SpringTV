@@ -50,7 +50,7 @@ public class UsersViewRepository {
     /*@Procedure(name = "getUserById")*/
     public UsersView getUserById(@Param("userId") Long id) throws ClassNotFoundException, SQLException {
         Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call UserPackage.getUserById(?,?)}");
+        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getUserById(?,?)}");
         stmt.setLong(1, id);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         stmt.execute();
@@ -71,7 +71,7 @@ public class UsersViewRepository {
 
     public Long GetUserIdByUsername(@Param("InUserName") String login) throws ClassNotFoundException, SQLException {
         Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call UserPackage.GetUserIdByUsername(?,?)}");
+        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.GetUserIdByUsername(?,?)}");
         stmt.setString(1, login);
         stmt.registerOutParameter(2, java.sql.Types.NUMERIC);
         stmt.execute();
@@ -83,7 +83,7 @@ public class UsersViewRepository {
     /*@Procedure(name = "GetUserEncryptedPasswordByLogin")*/
     public String GetUserEncryptedPasswordByLogin(@Param("InUserName") String login) throws ClassNotFoundException, SQLException {
         Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call UserPackage.GetUserEncryptedPasswordByLogin(?,?)}");
+        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.GetUserEncryptedPasswordByLogin(?,?)}");
         stmt.setString(1, login);
         stmt.registerOutParameter(2, java.sql.Types.VARCHAR);
         stmt.execute();
@@ -94,7 +94,7 @@ public class UsersViewRepository {
     /*   @Procedure(procedureName = "REGISTER_USER")*/
     public void saveUser(@Param("user_login") String login, @Param("user_password") String password, @Param("user_email") String email, @Param("user_role_id") Long id) throws ClassNotFoundException, SQLException {
         Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        var statement = con.prepareCall("{call ADMINPACKAGE.REGISTER_USER(?,?,?,?)}");
+        var statement = con.prepareCall("{call ADMINPACKAGE.RegisterUser(?,?,?,?)}");
         statement.setString(1, login);
         statement.setString(2, password);
         statement.setString(3, email);

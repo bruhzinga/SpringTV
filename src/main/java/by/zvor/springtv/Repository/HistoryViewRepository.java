@@ -13,19 +13,23 @@ import java.util.Collection;
 public class HistoryViewRepository {
     @Autowired
     @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplateAdmin;
+
+    @Autowired
+    @Qualifier("UserJdbcTemplate")
+    private JdbcTemplate jdbcTemplateUser;
 
     public void addHistory(Long userId, int id) throws SQLException {
-        var connection = jdbcTemplate.getDataSource().getConnection();
-        var statement = connection.prepareCall("{call addHistory(?,?)}");
+        var connection = jdbcTemplateAdmin.getDataSource().getConnection();
+        var statement = connection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addHistory(?,?)}");
         statement.setLong(1, userId);
         statement.setInt(2, id);
         statement.execute();
     }
 
     public Collection<HistoryView> getUserHistoryByUsername(String username) throws SQLException {
-        var connection = jdbcTemplate.getDataSource().getConnection();
-        var statement = connection.prepareCall("{call getUserHistoryByUsername(?,?)}");
+        var connection = jdbcTemplateUser.getDataSource().getConnection();
+        var statement = connection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getUserHistoryByUsername(?,?)}");
         statement.setString(1, username);
         statement.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         statement.execute();

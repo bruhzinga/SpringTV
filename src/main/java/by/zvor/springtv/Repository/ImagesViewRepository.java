@@ -14,11 +14,15 @@ public class ImagesViewRepository {
 
     @Autowired
     @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplateAdmin;
+
+    @Autowired
+    @Qualifier("UserJdbcTemplate")
+    private JdbcTemplate jdbcTemplateUser;
 
     public void addNewImage(@Param("imageName") String name, @Param("image") byte[] image, @Param("ImType") String type) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call AddNewImage(?,?,?)}");
+        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.AddNewImage(?,?,?)}");
         statement.setString(1, name);
         statement.setBytes(2, image);
         statement.setString(3, type);
@@ -27,8 +31,8 @@ public class ImagesViewRepository {
     }
 
     public byte[] getThumbnail(Long movieId) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call GetThumbnailByMovieId(?,?)}");
+        Connection con = jdbcTemplateUser.getDataSource().getConnection();
+        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.GetThumbnailByMovieId(?,?)}");
         stmt.setLong(1, movieId);
         stmt.registerOutParameter(2, java.sql.Types.BLOB);
         stmt.execute();
@@ -39,8 +43,8 @@ public class ImagesViewRepository {
     }
 
     public byte[] getPersonImage(Long personId) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call GetPersonImagebyId(?,?)}");
+        Connection con = jdbcTemplateUser.getDataSource().getConnection();
+        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.GetPersonImagebyId(?,?)}");
         stmt.setLong(1, personId);
         stmt.registerOutParameter(2, java.sql.Types.BLOB);
         stmt.execute();
@@ -51,8 +55,8 @@ public class ImagesViewRepository {
     }
 
     public void deleteImage(Long id) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call DeleteImageById(?)}");
+        Connection con = jdbcTemplateUser.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.DeleteImageById(?)}");
         statement.setLong(1, id);
         statement.execute();
 
@@ -60,8 +64,8 @@ public class ImagesViewRepository {
     }
 
     public void updateImage(Long id, String name, byte[] image, String type) throws SQLException, ClassNotFoundException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call UpdateImageById(?,?,?,?)}");
+        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.UpdateImageById(?,?,?,?)}");
         statement.setLong(1, id);
         statement.setString(2, name);
         statement.setBytes(3, image);

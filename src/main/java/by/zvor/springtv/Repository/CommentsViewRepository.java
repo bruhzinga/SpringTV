@@ -18,11 +18,16 @@ public class CommentsViewRepository {
 
     @Autowired
     @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplateAdmin;
+
+    @Autowired
+    @Qualifier("UserJdbcTemplate")
+    private JdbcTemplate jdbcTemplateUser;
+
 
     public void postComment(@Param("userID") Long userId, @Param("movieID") Long movieId, @Param("comment_text") String commentText) throws SQLException, ClassNotFoundException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call add_comment(?,?,?)}");
+        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addComment(?,?,?)}");
         statement.setLong(1, userId);
         statement.setLong(2, movieId);
         statement.setString(3, commentText);
@@ -32,8 +37,8 @@ public class CommentsViewRepository {
 
 
     public Collection<CommentsView> getCommentsByMovieId(long id) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call GetCommentsByMovieId(?,?)}");
+        Connection con = jdbcTemplateUser.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.GetCommentsByMovieId(?,?)}");
         statement.setLong(1, id);
         statement.registerOutParameter(2, Types.REF_CURSOR);
 

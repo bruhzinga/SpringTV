@@ -19,13 +19,14 @@ import java.sql.SQLException;
 public class MovieMediaViewRepository {
     /* @Procedure(name = "getMovieByIdWithMedia")*/
 
+
     @Autowired
-    @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("UserJdbcTemplate")
+    private JdbcTemplate jdbcTemplateUser;
 
     public MovieMediaView getMovieByIdWithMedia(@Param("movieId") int id) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplate.getDataSource().getConnection();
-        var statement = con.prepareCall("{call getMovieByIdWithMedia(?,?)}");
+        Connection con = jdbcTemplateUser.getDataSource().getConnection();
+        var statement = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getMovieByIdWithMedia(?,?)}");
         statement.setInt(1, id);
         statement.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         statement.execute();
