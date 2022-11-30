@@ -1,11 +1,9 @@
 package by.zvor.springtv.Repository;
 
 
+import by.zvor.springtv.Config.DataSourceAdmin;
 import by.zvor.springtv.Entity.UsersView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -39,18 +37,16 @@ import java.sql.SQLException;
 @Repository
 public class UsersViewRepository {
 
-    @Autowired
-    @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplateAdmin;
+    Connection AdminConnection = DataSourceAdmin.getConnection();
+    Connection UserConnection = DataSourceAdmin.getConnection();
 
-    @Autowired
-    @Qualifier("UserJdbcTemplate")
-    private JdbcTemplate jdbcTemplateUser;
+    public UsersViewRepository() throws SQLException {
+    }
 
     /*@Procedure(name = "getUserById")*/
     public UsersView getUserById(@Param("userId") Long id) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getUserById(?,?)}");
+
+        java.sql.CallableStatement stmt = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getUserById(?,?)}");
         stmt.setLong(1, id);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         stmt.execute();
@@ -62,7 +58,6 @@ public class UsersViewRepository {
             user.setPasswordHash(rs.getString("PASSWORD_HASH"));
             user.setRole(rs.getString("ROLE"));
         }
-
         return user;
     }
 
@@ -70,31 +65,30 @@ public class UsersViewRepository {
     /* @Procedure(name = "GetUserIdByUsername")*/
 
     public Long GetUserIdByUsername(@Param("InUserName") String login) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.GetUserIdByUsername(?,?)}");
+
+        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.GetUserIdByUsername(?,?)}");
         stmt.setString(1, login);
         stmt.registerOutParameter(2, java.sql.Types.NUMERIC);
         stmt.execute();
         Long id = stmt.getLong(2);
-
         return id;
     }
 
     /*@Procedure(name = "GetUserEncryptedPasswordByLogin")*/
     public String GetUserEncryptedPasswordByLogin(@Param("InUserName") String login) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.GetUserEncryptedPasswordByLogin(?,?)}");
+        java.sql.CallableStatement stmt = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.GetUserEncryptedPasswordByLogin(?,?)}");
         stmt.setString(1, login);
         stmt.registerOutParameter(2, java.sql.Types.VARCHAR);
         stmt.execute();
-        return stmt.getString(2);
+        var pass = stmt.getString(2);
+        return pass;
     }
 
 
     /*   @Procedure(procedureName = "REGISTER_USER")*/
     public void saveUser(@Param("user_login") String login, @Param("user_password") String password, @Param("user_email") String email, @Param("user_role_id") Long id) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        var statement = con.prepareCall("{call ADMINPACKAGE.RegisterUser(?,?,?,?)}");
+
+        var statement = AdminConnection.prepareCall("{call ADMINPACKAGE.RegisterUser(?,?,?,?)}");
         statement.setString(1, login);
         statement.setString(2, password);
         statement.setString(3, email);

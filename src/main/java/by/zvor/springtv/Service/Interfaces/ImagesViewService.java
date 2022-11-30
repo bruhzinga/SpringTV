@@ -16,8 +16,8 @@ public class ImagesViewService {
         this.imagesViewRepository = imagesViewRepository;
     }
 
-    public void addNewImage(String name, byte[] image, String type) throws SQLException, ClassNotFoundException {
-        imagesViewRepository.addNewImage(name, image, type);
+    public int addNewImage(String name, byte[] image, String type) throws SQLException, ClassNotFoundException {
+        return imagesViewRepository.addNewImage(name, image, type);
     }
 
 

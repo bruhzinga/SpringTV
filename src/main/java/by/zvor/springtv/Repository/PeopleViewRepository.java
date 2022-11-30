@@ -1,10 +1,9 @@
 package by.zvor.springtv.Repository;
 
+import by.zvor.springtv.Config.DataSourceAdmin;
+import by.zvor.springtv.Config.DataSourceUser;
 import by.zvor.springtv.Entity.PeopleView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -30,18 +29,16 @@ import java.util.Collection;
 
 @Repository
 public class PeopleViewRepository {
-    @Autowired
-    @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplateAdmin;
 
-    @Autowired
-    @Qualifier("UserJdbcTemplate")
-    private JdbcTemplate jdbcTemplateUser;
+    Connection AdminConnection = DataSourceAdmin.getConnection();
+    Connection UserConnection = DataSourceUser.getConnection();
+
+    public PeopleViewRepository() throws SQLException {
+    }
 
     /* @Procedure(name = "findAllByProfession")*/
     public Collection<PeopleView> findAllByProfession(@Param("ProfessionIn") String actor) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.findAllByProfession(?,?)}");
+        java.sql.CallableStatement stmt = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.findAllByProfession(?,?)}");
         stmt.setString(1, actor);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         stmt.execute();
@@ -60,8 +57,7 @@ public class PeopleViewRepository {
 
     /*@Procedure(name = "addActor")*/
     public void addActor(@Param("actorName") String name, @Param("photoId") Long photoId) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addActor(?,?)}");
+        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addActor(?,?)}");
         stmt.setString(1, name);
         stmt.setLong(2, photoId);
         stmt.execute();
@@ -69,8 +65,7 @@ public class PeopleViewRepository {
 
     /*@Procedure(name = "addDirector")*/
     public void addDirector(@Param("directorName") String name, @Param("photoId") Long photoId) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addDirector(?,?)}");
+        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addDirector(?,?)}");
         stmt.setString(1, name);
         stmt.setLong(2, photoId);
         stmt.execute();
@@ -78,8 +73,7 @@ public class PeopleViewRepository {
 
     /*@Procedure(procedureName = "addActorToMovie")*/
     public void addActorToMovie(@Param("actorId") Long actorId, @Param("movieId") Long movieId, @Param("RoleIn") String role) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addActorToMovie(?,?,?)}");
+        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addActorToMovie(?,?,?)}");
         stmt.setLong(1, actorId);
         stmt.setLong(2, movieId);
         stmt.setString(3, role);

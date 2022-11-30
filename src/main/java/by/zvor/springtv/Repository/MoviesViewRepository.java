@@ -1,11 +1,10 @@
 package by.zvor.springtv.Repository;
 
+import by.zvor.springtv.Config.DataSourceAdmin;
+import by.zvor.springtv.Config.DataSourceUser;
 import by.zvor.springtv.Entity.MovieActorsView;
 import by.zvor.springtv.Entity.MoviesView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -34,17 +33,14 @@ public class MoviesViewRepository {
     /*@Procedure(name
      = "getAllMoviesWithoutMedia")*/
 
-    @Autowired
-    @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplateAdmin;
+    Connection AdminConnection = DataSourceAdmin.getConnection();
+    Connection UserConnection = DataSourceUser.getConnection();
 
-    @Autowired
-    @Qualifier("UserJdbcTemplate")
-    private JdbcTemplate jdbcTemplateUser;
+    public MoviesViewRepository() throws SQLException {
+    }
 
     public Collection<MoviesView> getAllMoviesWithoutMedia(int page) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getAllMoviesWithoutMedia(?,?)}");
+        java.sql.CallableStatement stmt = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getAllMoviesWithoutMedia(?,?)}");
         stmt.setInt(2, page);
         stmt.registerOutParameter(1, java.sql.Types.REF_CURSOR);
         stmt.execute();
@@ -66,8 +62,7 @@ public class MoviesViewRepository {
 
     /*@Procedure(name = "getMovieByIdWithoutMedia")*/
     public MoviesView getMovieByIdNoMedia(@Param("movieId") int id) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getMovieByIdWithoutMedia(?,?)}");
+        java.sql.CallableStatement stmt = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getMovieByIdWithoutMedia(?,?)}");
         stmt.setInt(1, id);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         stmt.execute();
@@ -90,8 +85,7 @@ public class MoviesViewRepository {
     /* @Procedure(name = "getActorsByMovieId")*/
     public Collection<MovieActorsView> getActorsByMovieId(@Param("movieId") long id) throws
             ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getActorsByMovieId(?,?)}");
+        java.sql.CallableStatement stmt = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getActorsByMovieId(?,?)}");
         stmt.setLong(1, id);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         stmt.execute();
@@ -116,8 +110,7 @@ public class MoviesViewRepository {
     //                                        ImageID IN number, VideoID IN number, GenreID IN number, DirectorID IN number,
     //                                        TrailerID IN number) is
     public void addNewMovie(String title, int year, String description, int directorId, int genreId, int videoId, int trailerId, int imageId) throws SQLException {
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.AddNewMovie(?,?,?,?,?,?,?,?)}");
+        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.AddNewMovie(?,?,?,?,?,?,?,?)}");
         stmt.setString(1, title);
         stmt.setString(2, description);
         stmt.setInt(3, year);
@@ -130,8 +123,7 @@ public class MoviesViewRepository {
     }
 
     public Collection<MoviesView> getMoviesByActorId(long id) throws SQLException {
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call getMoviesByActorId(?,?)}");
+        java.sql.CallableStatement stmt = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getMoviesByActorId(?,?)}");
         stmt.setLong(1, id);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         stmt.execute();
@@ -152,8 +144,7 @@ public class MoviesViewRepository {
     }
 
     public Collection<MoviesView> getMoviesByDirectorId(long id) throws SQLException {
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        java.sql.CallableStatement stmt = con.prepareCall("{call getMoviesByDirectorId(?,?)}");
+        java.sql.CallableStatement stmt = UserConnection.prepareCall("{ call SPRINGTVADMIN.USERPACKAGE.getMoviesByDirectorId(?,?)}");
         stmt.setLong(1, id);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         stmt.execute();

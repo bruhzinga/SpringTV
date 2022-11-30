@@ -92,7 +92,6 @@ public class UserController {
                 .getPrincipal();
         String username = userDetails.getUsername();
         var userId = this.userService.GetUserIdByLogin(username);
-        this.userService.addFavoriteToUser(favouritesFromClient, userId);
         return new ResponseEntity<>("Favourite added", HttpStatus.OK);
 
 

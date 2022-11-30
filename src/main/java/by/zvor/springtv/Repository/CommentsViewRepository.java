@@ -1,10 +1,9 @@
 package by.zvor.springtv.Repository;
 
+import by.zvor.springtv.Config.DataSourceAdmin;
+import by.zvor.springtv.Config.DataSourceUser;
 import by.zvor.springtv.Entity.CommentsView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -16,18 +15,16 @@ import java.util.Collection;
 @Repository
 public class CommentsViewRepository {
 
-    @Autowired
-    @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplateAdmin;
+    Connection AdminConnection = DataSourceAdmin.getConnection();
+    Connection UserConnection = DataSourceUser.getConnection();
 
-    @Autowired
-    @Qualifier("UserJdbcTemplate")
-    private JdbcTemplate jdbcTemplateUser;
+    public CommentsViewRepository() throws SQLException {
+    }
 
 
     public void postComment(@Param("userID") Long userId, @Param("movieID") Long movieId, @Param("comment_text") String commentText) throws SQLException, ClassNotFoundException {
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addComment(?,?,?)}");
+
+        var statement = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addComment(?,?,?)}");
         statement.setLong(1, userId);
         statement.setLong(2, movieId);
         statement.setString(3, commentText);
@@ -37,8 +34,8 @@ public class CommentsViewRepository {
 
 
     public Collection<CommentsView> getCommentsByMovieId(long id) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        var statement = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.GetCommentsByMovieId(?,?)}");
+
+        var statement = AdminConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.GetCommentsByMovieId(?,?)}");
         statement.setLong(1, id);
         statement.registerOutParameter(2, Types.REF_CURSOR);
 

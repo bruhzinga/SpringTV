@@ -1,10 +1,9 @@
 package by.zvor.springtv.Repository;
 
+import by.zvor.springtv.Config.DataSourceAdmin;
+import by.zvor.springtv.Config.DataSourceUser;
 import by.zvor.springtv.Entity.GenresView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -31,18 +30,18 @@ import java.util.Collection;
 
 @Repository
 public class GenresViewRepository {
-    @Autowired
-    @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplateAdmin;
 
-    @Autowired
-    @Qualifier("UserJdbcTemplate")
-    private JdbcTemplate jdbcTemplateUser;
+
+    Connection AdminConnection = DataSourceAdmin.getConnection();
+    Connection UserConnection = DataSourceUser.getConnection();
+
+    public GenresViewRepository() throws SQLException {
+    }
+
 
     /* @Procedure(name = "getAllGenres")*/
     public Collection<GenresView> getAllGenres() throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        var statement = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getAllGenres(?)}");
+        var statement = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getAllGenres(?)}");
         statement.registerOutParameter(1, java.sql.Types.REF_CURSOR);
         statement.execute();
         var resultSet = statement.getObject(1, java.sql.ResultSet.class);
@@ -60,8 +59,8 @@ public class GenresViewRepository {
 
     /*@Procedure(name = "addGenre")*/
     public void addGenre(String genreName) throws SQLException, ClassNotFoundException {
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addGenre(?)}");
+
+        var statement = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addGenre(?)}");
         statement.setString(1, genreName);
         statement.execute();
 
@@ -69,10 +68,10 @@ public class GenresViewRepository {
 
     /* @Procedure(name = "deleteGenre")*/
     public void deleteGenre(@Param("genreID") Long id) throws SQLException, ClassNotFoundException {
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.deleteGenre(?)}");
+        var statement = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.deleteGenre(?)}");
         statement.setLong(1, id);
         statement.execute();
+
 
     }
 }

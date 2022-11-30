@@ -26,8 +26,8 @@ public class ImageController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> addNewImage(@RequestPart String name, @RequestPart byte[] image, @RequestPart String type) throws SQLException, ClassNotFoundException {
-        imagesService.addNewImage(name, image, type);
-        return new ResponseEntity<>("Image added", HttpStatus.OK);
+        var id = imagesService.addNewImage(name, image, type);
+        return new ResponseEntity<>("Image added with id " + id + " added", HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

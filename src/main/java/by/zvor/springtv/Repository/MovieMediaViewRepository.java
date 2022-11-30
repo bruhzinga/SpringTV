@@ -1,10 +1,8 @@
 package by.zvor.springtv.Repository;
 
+import by.zvor.springtv.Config.DataSourceUser;
 import by.zvor.springtv.Entity.MovieMediaView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -20,13 +18,13 @@ public class MovieMediaViewRepository {
     /* @Procedure(name = "getMovieByIdWithMedia")*/
 
 
-    @Autowired
-    @Qualifier("UserJdbcTemplate")
-    private JdbcTemplate jdbcTemplateUser;
+    Connection UserConnection = DataSourceUser.getConnection();
+
+    public MovieMediaViewRepository() throws SQLException {
+    }
 
     public MovieMediaView getMovieByIdWithMedia(@Param("movieId") int id) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        var statement = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getMovieByIdWithMedia(?,?)}");
+        var statement = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getMovieByIdWithMedia(?,?)}");
         statement.setInt(1, id);
         statement.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         statement.execute();

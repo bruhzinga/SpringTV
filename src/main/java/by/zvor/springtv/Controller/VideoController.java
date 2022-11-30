@@ -25,8 +25,8 @@ public class VideoController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/add", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> addNewImage(@RequestPart String name, @RequestPart byte[] video, @RequestPart String type) throws SQLException, ClassNotFoundException {
-        videoService.addNewVideo(name, video, type);
-        return new ResponseEntity<>("Video added", HttpStatus.OK);
+        var id = videoService.addNewVideo(name, video, type);
+        return new ResponseEntity<>("Video added with id " + id + " added", HttpStatus.OK);
     }
 
 

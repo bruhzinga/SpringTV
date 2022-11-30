@@ -1,10 +1,9 @@
 package by.zvor.springtv.Repository;
 
+import by.zvor.springtv.Config.DataSourceAdmin;
+import by.zvor.springtv.Config.DataSourceUser;
 import by.zvor.springtv.Entity.FavouritesView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.query.Param;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -32,18 +31,16 @@ import java.util.Collection;
 @Repository
 public class FavouritesViewRepository {
 
-    @Autowired
-    @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplateAdmin;
+    Connection AdminConnection = DataSourceAdmin.getConnection();
+    Connection UserConnection = DataSourceUser.getConnection();
 
-    @Autowired
-    @Qualifier("UserJdbcTemplate")
-    private JdbcTemplate jdbcTemplateUser;
+    public FavouritesViewRepository() throws SQLException {
+    }
 
     /* @Procedure(name = "getUserFavouritesByUsername")*/
     public Collection<FavouritesView> getUserFavouritesByUsername(@Param("UserUsername") String username) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateUser.getDataSource().getConnection();
-        var statement = con.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getUserFavouritesByUsername(?,?)}");
+
+        var statement = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getUserFavouritesByUsername(?,?)}");
         statement.setString(1, username);
         statement.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         statement.execute();
@@ -62,8 +59,7 @@ public class FavouritesViewRepository {
 
     /*@Procedure(procedureName = "add_favourite")*/
     public void addFavouriteToUser(@Param("userID") Long userId, @Param("movieID") Long filmId) throws ClassNotFoundException, SQLException {
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addFavourite(?,?)}");
+        var statement = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addFavourite(?,?)}");
         statement.setLong(1, userId);
         statement.setLong(2, filmId);
         statement.execute();
@@ -74,8 +70,7 @@ public class FavouritesViewRepository {
     /*  @Procedure(procedureName = "delete_favourite")*/
     public void deleteFavouriteFromUser(@Param("userID") Long userId, @Param("movieID") Long filmId) throws ClassNotFoundException, SQLException {
 
-        Connection con = jdbcTemplateAdmin.getDataSource().getConnection();
-        var statement = con.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.deleteFavourite(?,?)}");
+        var statement = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.deleteFavourite(?,?)}");
         statement.setLong(1, userId);
         statement.setLong(2, filmId);
         statement.execute();

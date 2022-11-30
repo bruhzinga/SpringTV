@@ -15,7 +15,7 @@ public class VideosViewService {
         this.videosViewRepository = videosViewRepository;
     }
 
-    public void addNewVideo(String name, byte[] video, String type) throws SQLException, ClassNotFoundException {
-        videosViewRepository.addNewVideo(name, video, type);
+    public int addNewVideo(String name, byte[] video, String type) throws SQLException, ClassNotFoundException {
+        return videosViewRepository.addNewVideo(name, video, type);
     }
 }

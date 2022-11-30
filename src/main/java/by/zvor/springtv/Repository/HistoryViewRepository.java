@@ -1,35 +1,32 @@
 package by.zvor.springtv.Repository;
 
+import by.zvor.springtv.Config.DataSourceAdmin;
+import by.zvor.springtv.Config.DataSourceUser;
 import by.zvor.springtv.Entity.HistoryView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 
 @Repository
 public class HistoryViewRepository {
-    @Autowired
-    @Qualifier("AdminJdbcTemplate")
-    private JdbcTemplate jdbcTemplateAdmin;
+    Connection AdminConnection = DataSourceAdmin.getConnection();
+    Connection UserConnection = DataSourceUser.getConnection();
 
-    @Autowired
-    @Qualifier("UserJdbcTemplate")
-    private JdbcTemplate jdbcTemplateUser;
+    public HistoryViewRepository() throws SQLException {
+    }
 
     public void addHistory(Long userId, int id) throws SQLException {
-        var connection = jdbcTemplateAdmin.getDataSource().getConnection();
-        var statement = connection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addHistory(?,?)}");
+
+        var statement = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addHistory(?,?)}");
         statement.setLong(1, userId);
         statement.setInt(2, id);
         statement.execute();
     }
 
     public Collection<HistoryView> getUserHistoryByUsername(String username) throws SQLException {
-        var connection = jdbcTemplateUser.getDataSource().getConnection();
-        var statement = connection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getUserHistoryByUsername(?,?)}");
+        var statement = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getUserHistoryByUsername(?,?)}");
         statement.setString(1, username);
         statement.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         statement.execute();
