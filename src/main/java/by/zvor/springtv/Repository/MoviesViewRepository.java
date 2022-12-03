@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 
 /*
@@ -109,8 +110,8 @@ public class MoviesViewRepository {
     //                                        movieYear IN number,
     //                                        ImageID IN number, VideoID IN number, GenreID IN number, DirectorID IN number,
     //                                        TrailerID IN number) is
-    public void addNewMovie(String title, int year, String description, int directorId, int genreId, int videoId, int trailerId, int imageId) throws SQLException {
-        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.AddNewMovie(?,?,?,?,?,?,?,?)}");
+    public int addNewMovie(String title, int year, String description, int directorId, int genreId, int videoId, int trailerId, int imageId) throws SQLException {
+        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.AddNewMovie(?,?,?,?,?,?,?,?,?)}");
         stmt.setString(1, title);
         stmt.setString(2, description);
         stmt.setInt(3, year);
@@ -119,7 +120,9 @@ public class MoviesViewRepository {
         stmt.setInt(6, genreId);
         stmt.setInt(7, directorId);
         stmt.setInt(8, trailerId);
+        stmt.registerOutParameter(9, Types.INTEGER);
         stmt.execute();
+        return stmt.getInt(9);
     }
 
     public Collection<MoviesView> getMoviesByActorId(long id) throws SQLException {

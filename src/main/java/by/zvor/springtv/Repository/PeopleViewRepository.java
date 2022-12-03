@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 
 /*create or replace procedure findAllByProfession(professionIn IN varchar2, result OUT SYS_REFCURSOR) is
@@ -64,11 +65,13 @@ public class PeopleViewRepository {
     }
 
     /*@Procedure(name = "addDirector")*/
-    public void addDirector(@Param("directorName") String name, @Param("photoId") Long photoId) throws ClassNotFoundException, SQLException {
-        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addDirector(?,?)}");
+    public int addDirector(@Param("directorName") String name, @Param("photoId") Long photoId) throws ClassNotFoundException, SQLException {
+        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addDirector(?,?,?)}");
+        stmt.registerOutParameter(3, Types.INTEGER);
         stmt.setString(1, name);
         stmt.setLong(2, photoId);
         stmt.execute();
+        return stmt.getInt(3);
     }
 
     /*@Procedure(procedureName = "addActorToMovie")*/

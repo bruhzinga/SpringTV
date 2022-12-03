@@ -44,8 +44,8 @@ public class MovieService {
         return moviesViewRepository.getActorsByMovieId(id);
     }
 
-    public void addNewMovie(String title, int year, String description, int directorId, int genreId, int videoId, int trailerId, int imageId) throws SQLException {
-        moviesViewRepository.addNewMovie(title, year, description, directorId, genreId, videoId, trailerId, imageId);
+    public int addNewMovie(String title, int year, String description, int directorId, int genreId, int videoId, int trailerId, int imageId) throws SQLException {
+        return moviesViewRepository.addNewMovie(title, year, description, directorId, genreId, videoId, trailerId, imageId);
     }
 
     public Collection<MoviesView> getMoviesByActorId(long id) throws SQLException {

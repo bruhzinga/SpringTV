@@ -33,12 +33,12 @@ public class PeopleViewService {
         peopleViewRepository.addActor(name, photoId);
     }
 
-    public void addDirector(String name, Long photoId) throws SQLException, ClassNotFoundException {
-        peopleViewRepository.addDirector(name, photoId);
+    public int addDirector(String name, Long photoId) throws SQLException, ClassNotFoundException {
+        return peopleViewRepository.addDirector(name, photoId);
     }
 
     public void addActorToMovie(Long actorId, Long movieId, String role) throws SQLException, ClassNotFoundException {
         peopleViewRepository.addActorToMovie(actorId, movieId, role);
     }
-    
+
 }

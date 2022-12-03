@@ -95,8 +95,8 @@ public class MovieController {
     //title, year,description, director, genre id ,director id,video id,trailer id,image id
     public ResponseEntity<String> addNewMovie(@RequestBody MovieFromClient movie) throws SQLException, ClassNotFoundException {
         /* movieService.addNewMovie(title, year, description, directorId, genreId, videoId, trailerId, imageId);*/
-        movieService.addNewMovie(movie.getTitle(), movie.getYear(), movie.getDescription(), movie.getDirectorId(), movie.getGenreId(), movie.getVideoId(), movie.getTrailerId(), movie.getImageId());
-        return new ResponseEntity<>("Movie added", HttpStatus.OK);
+        var id = movieService.addNewMovie(movie.getTitle(), movie.getYear(), movie.getDescription(), movie.getDirectorId(), movie.getGenreId(), movie.getVideoId(), movie.getTrailerId(), movie.getImageId());
+        return new ResponseEntity<>("Movie added with id " + id + " added", HttpStatus.OK);
     }
 /*TODO
     @GetMapping(value = "search/{searchString}", produces = MediaType.APPLICATION_JSON_VALUE)*/

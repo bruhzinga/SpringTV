@@ -1,44 +1,27 @@
 package by.zvor.springtv;
 
-import by.zvor.springtv.DTO.FavouritesFromClient;
-import by.zvor.springtv.DTO.UnauthorizedUser;
-import by.zvor.springtv.DTO.UnregisteredUser;
-import by.zvor.springtv.Security.JWTUtil;
-import by.zvor.springtv.Service.Interfaces.MovieService;
-import by.zvor.springtv.Service.Interfaces.UserViewService;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import by.zvor.springtv.Repository.SearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.ResponseEntity;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class SpringTvApplicationTests {
 
-    private final MovieService movieService;
 
-    private final UserViewService userViewService;
     @LocalServerPort
     int randomServerPort;
-    @Autowired
-    private JWTUtil jwtUtil;
+
     @Autowired
     private TestRestTemplate restTemplate;
 
     @Autowired
-    SpringTvApplicationTests(MovieService movieService, UserViewService userViewService) {
-        this.movieService = movieService;
-        this.userViewService = userViewService;
-    }
+    private SearchRepository searchRepository;
 
 
-    @Disabled
+   /*@Disabled
     @Test
     void RegisterAdminUserWithPost() {
         final String baseUrl = "http://localhost:" + randomServerPort + "/users/";
@@ -86,17 +69,9 @@ class SpringTvApplicationTests {
 
     }
 
-    @Test
-    void getUserById() throws InterruptedException {
-        var user = userViewService.findUserById(1L);
-        Assertions.assertThat(user).isNotNull();
-    }
+    */
 
-    @Test
-    void getUserIdByUsername() {
-        var id = userViewService.GetUserIdByLogin("admin");
-        Assertions.assertThat(id).isNotNull();
-    }
+
 
 
     /*@Test

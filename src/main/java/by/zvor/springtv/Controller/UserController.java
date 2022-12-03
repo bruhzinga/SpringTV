@@ -92,6 +92,7 @@ public class UserController {
                 .getPrincipal();
         String username = userDetails.getUsername();
         var userId = this.userService.GetUserIdByLogin(username);
+        this.userService.addFavoriteToUser(favouritesFromClient, userId);
         return new ResponseEntity<>("Favourite added", HttpStatus.OK);
 
 
@@ -107,8 +108,8 @@ public class UserController {
         return new ResponseEntity<>("Favourite deleted", HttpStatus.OK);
     }
 
-    @PostMapping(value = "/PostComment/{movieId]", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> PostComment(@RequestBody final CommentFromUser comment, @RequestPart("movieId") long movieId) throws SQLException, ClassNotFoundException {
+    @PostMapping(value = "/PostComment/{movieId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> PostComment(@RequestBody final CommentFromUser comment, @PathVariable("movieId") long movieId) throws SQLException, ClassNotFoundException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         String username = userDetails.getUsername();
@@ -118,6 +119,7 @@ public class UserController {
         this.commentsService.postComment(comment, userId);
         return new ResponseEntity<>("Comment posted", HttpStatus.OK);
     }
+
 
     @GetMapping(value = "/getHistory", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<HistoryView>> getUserHistory(@RequestHeader("Authorization") String bearerToken) throws SQLException, ClassNotFoundException {

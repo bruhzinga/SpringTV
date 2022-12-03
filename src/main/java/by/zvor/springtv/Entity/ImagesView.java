@@ -1,6 +1,7 @@
 package by.zvor.springtv.Entity;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Column;
@@ -14,6 +15,7 @@ import javax.persistence.Table;
  */
 @Getter
 @Entity
+@Setter
 @Immutable
 @Table(name = "IMAGES_VIEW")
 public class ImagesView {
@@ -30,6 +32,6 @@ public class ImagesView {
     @Column(name = "\"TYPE\"", nullable = false, length = 50)
     private String type;
 
-    protected ImagesView() {
+    public ImagesView() {
     }
 }
