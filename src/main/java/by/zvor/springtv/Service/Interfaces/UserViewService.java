@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 public class UserViewService {
@@ -93,5 +94,9 @@ public class UserViewService {
 
     public Collection<HistoryView> getUserHistoryByUsername(String username) throws SQLException, ClassNotFoundException {
         return historyRepository.getUserHistoryByUsername(username);
+    }
+
+    public Optional<String> findUserPasswordByEmail(String email) throws SQLException, ClassNotFoundException {
+        return userRepository.findUserPasswordByEmail(email);
     }
 }

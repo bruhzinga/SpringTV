@@ -58,6 +58,9 @@ public class MoviesViewRepository {
             movie.setGenre(rs.getString("GENRE"));
             movies.add(movie);
         }
+        rs.close();
+        stmt.close();
+
         return movies;
     }
 
@@ -78,7 +81,8 @@ public class MoviesViewRepository {
             movie.setDirector(rs.getString("DIRECTOR"));
             movie.setGenre(rs.getString("GENRE"));
         }
-
+        rs.close();
+        stmt.close();
         return movie;
 
     }
@@ -103,6 +107,8 @@ public class MoviesViewRepository {
             actor.setRole(rs.getString("Role"));
             actors.add(actor);
         }
+        rs.close();
+        stmt.close();
         return actors;
     }
 
@@ -122,7 +128,10 @@ public class MoviesViewRepository {
         stmt.setInt(8, trailerId);
         stmt.registerOutParameter(9, Types.INTEGER);
         stmt.execute();
+
+        stmt.close();
         return stmt.getInt(9);
+
     }
 
     public Collection<MoviesView> getMoviesByActorId(long id) throws SQLException {
@@ -143,6 +152,8 @@ public class MoviesViewRepository {
             movie.setGenre(rs.getString("GENRE"));
             movies.add(movie);
         }
+        rs.close();
+        stmt.close();
         return movies;
     }
 
@@ -164,6 +175,8 @@ public class MoviesViewRepository {
             movie.setGenre(rs.getString("GENRE"));
             movies.add(movie);
         }
+        rs.close();
+        stmt.close();
         return movies;
     }
 }

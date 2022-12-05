@@ -3,11 +3,13 @@ package by.zvor.springtv.Repository;
 
 import by.zvor.springtv.Config.DataSourceAdmin;
 import by.zvor.springtv.Entity.UsersView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /*create or replace procedure getUserById(userId IN number, result OUT sys_refcursor) is
         begin
@@ -39,6 +41,9 @@ public class UsersViewRepository {
 
     Connection AdminConnection = DataSourceAdmin.getConnection();
     Connection UserConnection = DataSourceAdmin.getConnection();
+
+    @Autowired
+    SearchRepository searchRepository;
 
     public UsersViewRepository() throws SQLException {
     }
@@ -96,6 +101,17 @@ public class UsersViewRepository {
         statement.execute();
 
 
+    }
+
+    public Optional<String> findUserPasswordByEmail(String email) throws ClassNotFoundException, SQLException {
+        email = "=" + "'" + email + "'";
+        var rs = searchRepository.ExecuteSearch("USERS", "EMAIL", email, false);
+        Optional<String> password = Optional.empty();
+        while (rs.next()) {
+            password = Optional.of(rs.getString("PASSWORD_HASH"));
+
+        }
+        return password;
     }
 
 

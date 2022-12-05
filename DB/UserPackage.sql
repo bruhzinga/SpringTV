@@ -141,10 +141,15 @@ as
     begin
 
         select (select INSTANCES from user_tables where TABLE_NAME = tableName) into existence from dual;
+        if existence is NOT null then
+            goto here;
+        end if;
         select (select TEXT_LENGTH from USER_VIEWS where VIEW_NAME = tableName) into existence from dual;
         if existence is null then
             raise_application_error(-20001, 'Table not found');
         end if;
+
+        <<here>>
         select (select DATA_LENGTH from user_tab_columns where table_name = tableName and COLUMN_NAME = columnName)
         into existence
         from dual;

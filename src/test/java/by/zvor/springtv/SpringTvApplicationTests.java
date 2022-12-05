@@ -1,10 +1,12 @@
 package by.zvor.springtv;
 
-import by.zvor.springtv.Repository.SearchRepository;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -17,8 +19,16 @@ class SpringTvApplicationTests {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
-    private SearchRepository searchRepository;
+    @Test
+    public void TryToRequestMoviesManyTimes() {
+        final String baseUrl = "http://localhost:" + randomServerPort + "/movies/allwithoutmedia/1";
+          for (int i = 0; i < 1000; i++) {
+                var result = restTemplate.getForObject(baseUrl, String.class);
+              assertEquals(result,"[{\"id\":1,\"title\":\"Interstellar\",\"year\":2014,\"description\":\"Earth's future has been riddled by disasters, famines, and droughts. There is only one way to ensure mankind's survival: Interstellar travel. A newly discovered wormhole in the far reaches of our solar system allows a team of astronauts to go where no man has gone before, a planet that may have the right environment to sustain human life.\",\"numberOfViews\":0,\"director\":\"Cristopher Nolan\",\"genre\":\"Drama\"}]");
+            }
+    }
+
+
 
 
    /*@Disabled

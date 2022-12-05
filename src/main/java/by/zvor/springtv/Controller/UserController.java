@@ -9,6 +9,7 @@ import by.zvor.springtv.Entity.FavouritesView;
 import by.zvor.springtv.Entity.HistoryView;
 import by.zvor.springtv.Security.JWTUtil;
 import by.zvor.springtv.Service.Interfaces.CommentsViewService;
+import by.zvor.springtv.Service.Interfaces.MailService;
 import by.zvor.springtv.Service.Interfaces.UserViewService;
 import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users/")
@@ -37,12 +39,15 @@ public class UserController {
 
     private final CommentsViewService commentsService;
 
+    private final MailService mailService;
+
     @Autowired
-    public UserController(final UserViewService userService, final AuthenticationManager authenticationManager, final JWTUtil jwtUtil, CommentsViewService commentsService) {
+    public UserController(final UserViewService userService, final AuthenticationManager authenticationManager, final JWTUtil jwtUtil, CommentsViewService commentsService, MailService mailService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.commentsService = commentsService;
+        this.mailService = mailService;
         encryptor = new JasyptEncryptorConfig().getPasswordEncryptor();
     }
 
@@ -131,5 +136,17 @@ public class UserController {
         return new ResponseEntity<>(history, HttpStatus.OK);
 
 
+    }
+
+    @PostMapping(value = "forgotPassword", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> Email) throws SQLException, ClassNotFoundException {
+        var password = this.userService.findUserPasswordByEmail(Email.get("email"));
+        if (password.isEmpty()) {
+            return new ResponseEntity<>("User with this email doesn't exist", HttpStatus.BAD_REQUEST);
+        } else {
+            var decryptedPassword = encryptor.decrypt(password.get());
+            mailService.SendPasswordByEmail(Email.get("email"), decryptedPassword);
+        }
+        return new ResponseEntity<>("Password sent to your email", HttpStatus.OK);
     }
 }
