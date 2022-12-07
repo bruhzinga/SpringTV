@@ -56,4 +56,8 @@ public class MovieService {
         return moviesViewRepository.getMoviesByDirectorId(id);
 
     }
+
+    public Collection<MoviesView> SearchMovies(String columnName, String searchParameters, boolean oracleText) throws SQLException, ClassNotFoundException {
+        return moviesViewRepository.SearchMovies(columnName, searchParameters, oracleText);
+    }
 }

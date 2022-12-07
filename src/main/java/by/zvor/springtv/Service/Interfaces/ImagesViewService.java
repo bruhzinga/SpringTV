@@ -1,11 +1,14 @@
 package by.zvor.springtv.Service.Interfaces;
 
+import by.zvor.springtv.DTO.ImageInfoToUser;
+import by.zvor.springtv.DTO.SearchFromUser;
 import by.zvor.springtv.Repository.ImagesViewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 @Service
 public class ImagesViewService {
@@ -39,4 +42,10 @@ public class ImagesViewService {
     public void updateImage(Long id, String name, byte[] image, String type) throws SQLException, ClassNotFoundException {
         imagesViewRepository.updateImage(id, name, image, type);
     }
+
+
+    public Collection<ImageInfoToUser> searchImages(SearchFromUser searchFromUser) throws SQLException {
+        return imagesViewRepository.SearchImages(searchFromUser.getColumnName(), searchFromUser.getSearchParameters(), searchFromUser.isOracleText());
+    }
 }
+

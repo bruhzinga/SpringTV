@@ -4,6 +4,7 @@ import by.zvor.springtv.Config.DataSourceAdmin;
 import by.zvor.springtv.Config.DataSourceUser;
 import by.zvor.springtv.Entity.MovieActorsView;
 import by.zvor.springtv.Entity.MoviesView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -36,6 +37,9 @@ public class MoviesViewRepository {
 
     Connection AdminConnection = DataSourceAdmin.getConnection();
     Connection UserConnection = DataSourceUser.getConnection();
+
+    @Autowired
+    private SearchRepository searchRepository;
 
     public MoviesViewRepository() throws SQLException {
     }
@@ -179,4 +183,22 @@ public class MoviesViewRepository {
         stmt.close();
         return movies;
     }
+
+    public Collection<MoviesView> SearchMovies(String columnName, String searchParameters, boolean oracleText) throws SQLException, ClassNotFoundException {
+        var rs = searchRepository.ExecuteSearch("MOVIES_VIEW", columnName, searchParameters, oracleText);
+        var movies = new java.util.ArrayList<MoviesView>();
+        while (rs.next()) {
+            var movie = new MoviesView();
+            movie.setId(rs.getInt("ID"));
+            movie.setTitle(rs.getString("TITLE"));
+            movie.setYear(rs.getShort("YEAR"));
+            movie.setDescription(rs.getString("DESCRIPTION"));
+            movie.setNumberOfViews(rs.getInt("NUMBER_OF_VIEWS"));
+            movie.setDirector(rs.getString("DIRECTOR"));
+            movie.setGenre(rs.getString("GENRE"));
+            movies.add(movie);
+        }
+        return movies;
+    }
+
 }

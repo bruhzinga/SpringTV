@@ -1,5 +1,7 @@
 package by.zvor.springtv.Controller;
 
+import by.zvor.springtv.DTO.ImageInfoToUser;
+import by.zvor.springtv.DTO.SearchFromUser;
 import by.zvor.springtv.Service.Interfaces.ImagesViewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/images/")
@@ -53,6 +56,14 @@ public class ImageController {
     @GetMapping(value = "people/{id}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getPersonImage(@PathVariable("id") Long id) throws SQLException, ClassNotFoundException {
         return new ResponseEntity<>(imagesService.getPersonImage(id), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping(value = "searchImages", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<ImageInfoToUser>> SearchImages(@RequestBody SearchFromUser searchFromUser) throws SQLException, ClassNotFoundException {
+        searchFromUser.setTableName("IMAGES_VIEW");
+        return new ResponseEntity<>(imagesService.searchImages(searchFromUser), HttpStatus.OK);
+
     }
 
 

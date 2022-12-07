@@ -342,6 +342,7 @@ as
     procedure UpdateImageById(imageId IN number, nameIn IN varchar2, imageIn IN blob,
                               typeIn IN varchar2);
     procedure addHistory(userId IN number, movieId IN number);
+    procedure ExportTablesToJSON;
 end AdminPackage;
 
 
@@ -513,6 +514,11 @@ as
         insert into HISTORY(USER_ID, MOVIE_ID)
         values (userId, movieId);
     end addHistory;
+    procedure ExportTablesToJSON is
+    begin
+        
+
+    end ;
 
 end AdminPackage;
 

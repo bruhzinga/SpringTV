@@ -2,17 +2,24 @@ package by.zvor.springtv.Repository;
 
 import by.zvor.springtv.Config.DataSourceAdmin;
 import by.zvor.springtv.Config.DataSourceUser;
+import by.zvor.springtv.DTO.ImageInfoToUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Repository
 public class ImagesViewRepository {
 
     Connection AdminConnection = DataSourceAdmin.getConnection();
     Connection UserConnection = DataSourceUser.getConnection();
+
+    @Autowired
+    private SearchRepository searchRepository;
 
     public ImagesViewRepository() throws SQLException {
     }
@@ -68,4 +75,19 @@ public class ImagesViewRepository {
 
 
     }
+
+    public Collection<ImageInfoToUser> SearchImages(String columnName, String searchParameters, boolean oracleText) throws SQLException {
+        var rs = searchRepository.ExecuteSearch("IMAGES_VIEW", columnName, searchParameters, oracleText);
+        var Images = new ArrayList<ImageInfoToUser>();
+        while (rs.next()) {
+            var Image = new ImageInfoToUser();
+            Image.setId(rs.getLong("ID"));
+            Image.setName(rs.getString("NAME"));
+            Image.setType(rs.getString("TYPE"));
+            Images.add(Image);
+        }
+        return Images;
+
+    }
+
 }

@@ -1,6 +1,7 @@
 package by.zvor.springtv;
 
-import by.zvor.springtv.Repository.SearchRepository;
+import by.zvor.springtv.Repository.ImagesViewRepository;
+import by.zvor.springtv.Repository.MoviesViewRepository;
 import by.zvor.springtv.Repository.UsersViewRepository;
 import by.zvor.springtv.Service.Interfaces.MailService;
 import org.junit.jupiter.api.Test;
@@ -10,11 +11,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.sql.SQLException;
 
 @SpringBootTest
-public class CommonTests {
+public class RepositoryTests {
 
 
     @Autowired
-    SearchRepository searchRepository;
+    MoviesViewRepository moviesViewRepository;
+
+    @Autowired
+    ImagesViewRepository imagesViewRepository;
 
     @Autowired
     MailService mailService;
@@ -25,7 +29,7 @@ public class CommonTests {
 
     @Test
     public void SearchTablesWithOracleText() throws SQLException, ClassNotFoundException {
-        var results = searchRepository.SearchMovies("DESCRIPTION", "fuzzy(earth)", true);
+        var results = moviesViewRepository.SearchMovies("DESCRIPTION", "fuzzy(earth)", true);
         for (var result : results) {
             System.out.println(result.getTitle());
         }
@@ -33,7 +37,7 @@ public class CommonTests {
 
     @Test
     public void SearchMoviesWithoutOracleText() throws SQLException, ClassNotFoundException {
-        var results = searchRepository.SearchMovies("YEAR", "= '2014'", false);
+        var results = moviesViewRepository.SearchMovies("YEAR", "= '2014'", false);
         for (var result : results) {
             System.out.println(result.getTitle());
         }
@@ -41,7 +45,7 @@ public class CommonTests {
 
     @Test
     public void SearchImagesWithoutOracleText() throws SQLException {
-        var results = searchRepository.SearchImages("TYPE", "='director'", false);
+        var results = imagesViewRepository.SearchImages("TYPE", "='director'", false);
         for (var result : results) {
             System.out.println(result.getId());
         }

@@ -170,10 +170,4 @@ as
     end SearchTables;
 end UserPackage;
 
-select *
-from USER_VIEWS;
-
-select *
-from IMAGES_VIEW
-where TYPE = 'movie'
 
