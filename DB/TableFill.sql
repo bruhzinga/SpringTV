@@ -122,12 +122,13 @@ from movies
 where TITLE = 'jsadjsadj';
 
 
-
+declare
+    v_id number;
 begin
-    for i in 10001..100000
+    for i in 2..100000
         loop
-            ADDNEWMOVIE('test' || i,
-                        'test' || i,
-                        2007, 34, 7, 3, 22, 2);
+            SPRINGTVADMIN.ADMINPACKAGE.ADDNEWMOVIE('test' || i,
+                                                   'test' || i,
+                                                   2022, 1, 3, 72, 1, 1, v_id);
         end loop;
 end;

@@ -25,8 +25,8 @@ public class SearchRepository {
 
     public ResultSet ExecuteSearch(String tableName, String columnName, String searchParameters, boolean oracleText) throws SQLException {
         CallableStatement stmt = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.SearchTables(?,?,?,?,?)}");
-        stmt.setString(1, tableName);
-        stmt.setString(2, columnName);
+        stmt.setString(1, tableName.toUpperCase());
+        stmt.setString(2, columnName.toUpperCase());
         stmt.setString(3, searchParameters);
         if (oracleText) {
             stmt.setInt(4, 1);

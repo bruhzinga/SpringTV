@@ -1,5 +1,6 @@
 package by.zvor.springtv;
 
+import by.zvor.springtv.Repository.EncryptionRepository;
 import by.zvor.springtv.Repository.ImagesViewRepository;
 import by.zvor.springtv.Repository.MoviesViewRepository;
 import by.zvor.springtv.Repository.UsersViewRepository;
@@ -25,6 +26,9 @@ public class RepositoryTests {
 
     @Autowired
     UsersViewRepository usersViewRepository;
+
+    @Autowired
+    EncryptionRepository encryptionRepository;
 
 
     @Test
@@ -60,6 +64,11 @@ public class RepositoryTests {
     public void TestFindUserPasswordByEmail() throws SQLException, ClassNotFoundException {
         var pass = usersViewRepository.findUserPasswordByEmail("bruh@mail.com");
         System.out.println(pass);
+    }
+
+    @Test
+    public void DecryptionTest() throws SQLException, ClassNotFoundException {
+        String password = encryptionRepository.DecryptPassword("");
     }
 
 

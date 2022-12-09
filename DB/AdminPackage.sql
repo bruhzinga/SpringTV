@@ -342,7 +342,10 @@ as
     procedure UpdateImageById(imageId IN number, nameIn IN varchar2, imageIn IN blob,
                               typeIn IN varchar2);
     procedure addHistory(userId IN number, movieId IN number);
-    procedure ExportTablesToJSON;
+    function EncryptPassword(password IN varchar2) RETURN USERS.PASSWORD_HASH%TYPE;
+    FUNCTION DecryptPassword(encryptedPassword IN USERS.PASSWORD_HASH%TYPE)
+        RETURN varchar2;
+
 end AdminPackage;
 
 
@@ -351,9 +354,11 @@ create or replace package body AdminPackage
 as
     procedure RegisterUser(user_login VARCHAR2, user_password VARCHAR2, user_email VARCHAR2,
                            user_role_id Number) is
+        EncryptedPassword varchar2(100);
     begin
+        EncryptedPassword := EncryptPassword(user_password);
         INSERT INTO users (USERNAME, PASSWORD_HASH, email, ROLE_ID)
-        VALUES (user_login, (user_password), user_email, user_role_id);
+        VALUES (user_login, (EncryptedPassword), user_email, user_role_id);
     end RegisterUser;
     procedure addFavourite(userID number, movieID number) is
     begin
@@ -442,13 +447,13 @@ as
 
 
         if imageType != 'movie' then
-            raise_application_error(-20001, 'Image is not an movie image');
+            raise_application_error(-20001, 'Image is not a movie image');
         end if;
         if videoType != 'movie' then
-            raise_application_error(-20001, 'Video is not an movie video');
+            raise_application_error(-20001, 'Video is not a movie video');
         end if;
         if trailerType != 'trailer' then
-            raise_application_error(-20001, 'Trailer is not an movie trailer');
+            raise_application_error(-20001, 'Trailer is not a movie trailer');
         end if;
 
         if peopleType != 'director' then
@@ -514,13 +519,33 @@ as
         insert into HISTORY(USER_ID, MOVIE_ID)
         values (userId, movieId);
     end addHistory;
-    procedure ExportTablesToJSON is
-    begin
-        
-
-    end ;
+    FUNCTION EncryptPassword(password IN varchar2)
+        RETURN USERS.PASSWORD_HASH%TYPE
+        IS
+        l_key    VARCHAR2(2000) := '1337133713371337';
+        l_in_val VARCHAR2(2000) := password;
+        l_mod    NUMBER         := DBMS_CRYPTO.encrypt_aes128 + DBMS_CRYPTO.chain_cbc + DBMS_CRYPTO.pad_pkcs5;
+        l_enc    RAW(2000);
+    BEGIN
+        l_enc := SYS.DBMS_CRYPTO.encrypt(utl_i18n.string_to_raw(l_in_val, 'AL32UTF8'), l_mod,
+                                         utl_i18n.string_to_raw(l_key, 'AL32UTF8'));
+        RETURN RAWTOHEX(l_enc);
+    END EncryptPassword;
+    FUNCTION DecryptPassword(encryptedPassword IN USERS.PASSWORD_HASH%TYPE)
+        RETURN varchar2
+        IS
+        l_key    VARCHAR2(2000) := '1337133713371337';
+        l_in_val RAW(2000)      := HEXTORAW(encryptedPassword);
+        l_mod    NUMBER         := DBMS_CRYPTO.encrypt_aes128 + DBMS_CRYPTO.chain_cbc + DBMS_CRYPTO.pad_pkcs5;
+        l_dec    RAW(2000);
+    BEGIN
+        l_dec := DBMS_CRYPTO.decrypt(l_in_val, l_mod, utl_i18n.string_to_raw(l_key, 'AL32UTF8'));
+        RETURN utl_i18n.raw_to_char(l_dec);
+    END DecryptPassword;
 
 end AdminPackage;
 
 
+
+grant execute on dbms_crypto to SPRINGTVADMIN;
 

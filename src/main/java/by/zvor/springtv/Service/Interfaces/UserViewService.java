@@ -1,16 +1,15 @@
 package by.zvor.springtv.Service.Interfaces;
 
-import by.zvor.springtv.Config.JasyptEncryptorConfig;
 import by.zvor.springtv.DTO.FavouritesFromClient;
 import by.zvor.springtv.DTO.UnauthorizedUser;
 import by.zvor.springtv.DTO.UnregisteredUser;
 import by.zvor.springtv.Entity.FavouritesView;
 import by.zvor.springtv.Entity.HistoryView;
 import by.zvor.springtv.Entity.UsersView;
+import by.zvor.springtv.Repository.EncryptionRepository;
 import by.zvor.springtv.Repository.FavouritesViewRepository;
 import by.zvor.springtv.Repository.HistoryViewRepository;
 import by.zvor.springtv.Repository.UsersViewRepository;
-import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,15 +27,16 @@ public class UserViewService {
 
     private final HistoryViewRepository historyRepository;
 
-    private final StringEncryptor encryptor;
+    private final EncryptionRepository encryptionRepository;
 
 
     @Autowired
-    public UserViewService(UsersViewRepository userRepository, FavouritesViewRepository favouritesRepository, HistoryViewRepository historyRepository) {
+    public UserViewService(UsersViewRepository userRepository, FavouritesViewRepository favouritesRepository, HistoryViewRepository historyRepository, EncryptionRepository encryptionRepository) {
         this.userRepository = userRepository;
         this.favouritesRepository = favouritesRepository;
         this.historyRepository = historyRepository;
-        encryptor = new JasyptEncryptorConfig().getPasswordEncryptor();
+
+        this.encryptionRepository = encryptionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -55,8 +55,8 @@ public class UserViewService {
         final String login = unauthorizedUser.getLogin();
         final String password = unauthorizedUser.getPassword();
         final var encryptedPassword = userRepository.GetUserEncryptedPasswordByLogin(login);
-
-        if (!encryptor.decrypt(encryptedPassword).equals(password)) {
+        var decryptedPassword = encryptionRepository.DecryptPassword(encryptedPassword);
+        if (!decryptedPassword.equals(password)) {
             throw new BadCredentialsException("Wrong password");
 
         }

@@ -65,21 +65,37 @@ as
     end getAllMoviesWithoutMedia;
     procedure getMovieByIdWithMedia(movieId IN number, result OUT SYS_REFCURSOR) is
     begin
+        select (select ID from MOVIES_VIEW where id = movieId) into existence from dual;
+        if existence is null then
+            raise_application_error(-20001, 'Movie not found');
+        end if;
         Open result for select * from MOVIE_MEDIA_VIEW where ID = movieId;
-
     end getMovieByIdWithMedia;
     procedure getMovieByIdWithoutMedia(movieId IN number, result OUT SYS_REFCURSOR) is
     begin
-        Open result for select * from MOVIES_VIEW where id = movieId;
+        select (select ID from MOVIES where ID = movieId) into existence from dual;
+        if existence is not null then
+            Open result for select * from MOVIES_VIEW where ID = movieId;
+        else
+            raise_application_error(-20001, 'Incorrect Movie ID');
+        end if;
     end getMovieByIdWithoutMedia;
     procedure getActorsByMovieId(movieId IN number, result OUT SYS_REFCURSOR) is
     begin
+        select (select ID from MOVIES where ID = movieId) into existence from dual;
+        if existence is null then
+            raise_application_error(-20001, 'Incorrect Movie ID');
+        end if;
         Open result for select *
                         from MOVIE_ACTORS_VIEW
                         where MOVIE_ID = movieId;
     end getActorsByMovieId;
     procedure GetThumbnailByMovieId(movieId IN number, result OUT blob) is
     begin
+        select (select ID from MOVIES where ID = movieId) into existence from dual;
+        if existence is null then
+            raise_application_error(-20001, 'Incorrect Movie ID');
+        end if;
         select IMAGE
         into result
         from MOVIE_MEDIA_VIEW
@@ -87,6 +103,10 @@ as
     end GetThumbnailByMovieId;
     procedure GetCommentsByMovieId(movieId IN number, result OUT SYS_REFCURSOR) is
     begin
+        select (select ID from MOVIES where ID = movieId) into existence from dual;
+        if existence is null then
+            raise_application_error(-20001, 'Incorrect Movie ID');
+        end if;
         Open result for select *
                         from COMMENTS_VIEW
                                  join movies on movies.TITLE = comments_view.TITLE
@@ -120,14 +140,15 @@ as
     end getMoviesByActorId;
     procedure getMoviesByDirectorId(directorID IN number, result OUT SYS_REFCURSOR) is
     begin
-        Open result for select *
-                        from MOVIES_VIEW
-                                 join people on people.NAME = movies_view.DIRECTOR
-                        where people.ID = directorID;
         select (select ID from people where id = directorID) into existence from dual;
         if existence is null then
             raise_application_error(-20001, 'Actor not found');
         end if;
+        Open result for select *
+                        from MOVIES_VIEW
+                                 join people on people.NAME = movies_view.DIRECTOR
+                        where people.ID = directorID;
+
     end getMoviesByDirectorId;
     procedure getUserHistoryByUsername(name IN varchar2, result OUT SYS_REFCURSOR) is
     begin

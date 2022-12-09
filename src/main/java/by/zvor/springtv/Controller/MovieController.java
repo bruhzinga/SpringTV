@@ -2,6 +2,7 @@ package by.zvor.springtv.Controller;
 
 import by.zvor.springtv.DTO.MovieActorViewToUser;
 import by.zvor.springtv.DTO.MovieFromClient;
+import by.zvor.springtv.DTO.SearchFromUser;
 import by.zvor.springtv.Entity.CommentsView;
 import by.zvor.springtv.Entity.MoviesView;
 import by.zvor.springtv.Service.Interfaces.CommentsViewService;
@@ -51,6 +52,7 @@ public class MovieController {
     @GetMapping(value = "video/{id}")
     public ResponseEntity<byte[]> getMovieWithMediaById(@PathVariable("id") int id) throws SQLException, ClassNotFoundException {
         var movie = movieService.getMovieByIdWithMedia(id);
+
         var video = movie.getVideo();
         var videoName = movie.getVideoName();
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -110,6 +112,12 @@ public class MovieController {
     @GetMapping(value = "getmoviesbyDirector/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<MoviesView>> getMoviesByDirectorId(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
         var movies = movieService.getMoviesByDirectorId(id);
+        return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "SearchMovies", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<MoviesView>> searchMovies(@RequestBody SearchFromUser searchFromUser) throws SQLException, ClassNotFoundException {
+        var movies = movieService.SearchMovies(searchFromUser);
         return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
     }
 

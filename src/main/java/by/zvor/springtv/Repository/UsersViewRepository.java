@@ -45,6 +45,7 @@ public class UsersViewRepository {
     @Autowired
     SearchRepository searchRepository;
 
+
     public UsersViewRepository() throws SQLException {
     }
 
@@ -86,6 +87,7 @@ public class UsersViewRepository {
         stmt.registerOutParameter(2, java.sql.Types.VARCHAR);
         stmt.execute();
         var pass = stmt.getString(2);
+        stmt.close();
         return pass;
     }
 

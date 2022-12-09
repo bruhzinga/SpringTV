@@ -1,17 +1,16 @@
 package by.zvor.springtv.Controller;
 
-import by.zvor.springtv.Config.JasyptEncryptorConfig;
 import by.zvor.springtv.DTO.CommentFromUser;
 import by.zvor.springtv.DTO.FavouritesFromClient;
 import by.zvor.springtv.DTO.UnauthorizedUser;
 import by.zvor.springtv.DTO.UnregisteredUser;
 import by.zvor.springtv.Entity.FavouritesView;
 import by.zvor.springtv.Entity.HistoryView;
+import by.zvor.springtv.Repository.EncryptionRepository;
 import by.zvor.springtv.Security.JWTUtil;
 import by.zvor.springtv.Service.Interfaces.CommentsViewService;
 import by.zvor.springtv.Service.Interfaces.MailService;
 import by.zvor.springtv.Service.Interfaces.UserViewService;
-import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,20 +34,21 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
 
-    private final StringEncryptor encryptor;
 
     private final CommentsViewService commentsService;
 
     private final MailService mailService;
 
+    private final EncryptionRepository encryptionRepository;
+
     @Autowired
-    public UserController(final UserViewService userService, final AuthenticationManager authenticationManager, final JWTUtil jwtUtil, CommentsViewService commentsService, MailService mailService) {
+    public UserController(final UserViewService userService, final AuthenticationManager authenticationManager, final JWTUtil jwtUtil, CommentsViewService commentsService, MailService mailService, EncryptionRepository encryptionRepository) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.commentsService = commentsService;
         this.mailService = mailService;
-        encryptor = new JasyptEncryptorConfig().getPasswordEncryptor();
+        this.encryptionRepository = encryptionRepository;
     }
 
 
@@ -70,7 +70,7 @@ public class UserController {
     @PostMapping(value = "register", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> register(@RequestBody final UnregisteredUser unauthorizedUser) throws Exception {
         try {
-            unauthorizedUser.setPassword(encryptor.encrypt(unauthorizedUser.getPassword()));
+
             this.userService.register(unauthorizedUser);
         } catch (final Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -144,7 +144,7 @@ public class UserController {
         if (password.isEmpty()) {
             return new ResponseEntity<>("User with this email doesn't exist", HttpStatus.BAD_REQUEST);
         } else {
-            var decryptedPassword = encryptor.decrypt(password.get());
+            var decryptedPassword = encryptionRepository.DecryptPassword(password.get());
             mailService.SendPasswordByEmail(Email.get("email"), decryptedPassword);
         }
         return new ResponseEntity<>("Password sent to your email", HttpStatus.OK);

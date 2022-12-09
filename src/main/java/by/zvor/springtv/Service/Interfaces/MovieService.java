@@ -1,5 +1,6 @@
 package by.zvor.springtv.Service.Interfaces;
 
+import by.zvor.springtv.DTO.SearchFromUser;
 import by.zvor.springtv.Entity.MovieActorsView;
 import by.zvor.springtv.Entity.MovieMediaView;
 import by.zvor.springtv.Entity.MoviesView;
@@ -57,7 +58,7 @@ public class MovieService {
 
     }
 
-    public Collection<MoviesView> SearchMovies(String columnName, String searchParameters, boolean oracleText) throws SQLException, ClassNotFoundException {
-        return moviesViewRepository.SearchMovies(columnName, searchParameters, oracleText);
+    public Collection<MoviesView> SearchMovies(SearchFromUser searchFromUser) throws SQLException, ClassNotFoundException {
+        return moviesViewRepository.SearchMovies(searchFromUser.getColumnName(), searchFromUser.getSearchParameters(), searchFromUser.isOracleText());
     }
 }

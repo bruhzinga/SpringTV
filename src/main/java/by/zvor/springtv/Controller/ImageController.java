@@ -40,7 +40,7 @@ public class ImageController {
         return new ResponseEntity<>("Image updated", HttpStatus.OK);
     }
 
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> deleteImage(@PathVariable Long id) throws SQLException, ClassNotFoundException {
         imagesService.deleteImage(id);
