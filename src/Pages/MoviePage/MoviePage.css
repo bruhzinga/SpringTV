@@ -1,0 +1,65 @@
+.table{
+    align-content: center;
+}
+
+table{
+    text-align: center;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+table th, td{
+    border-bottom: 1px solid #ddd;
+}
+table img{
+    height: 270px;
+}
+
+.write_comment{
+    width: 500px;
+    height: 50px;
+}
+.post_comment{
+    margin: 10px;
+    height: 50px;
+}
+.comment{
+
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    padding: 10px;
+    margin-bottom: 10px;
+
+}
+
+.commentText{
+        border-radius: 5px;
+        border: 1px solid #e5e5e5;
+        box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        padding: 10px;
+        margin-bottom: 10px;
+
+}
+.commentAuthor{
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+
+.commentList{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.isInFavourites
+{
+    background-color: red;
+}
+.isNotInFavourites
+{
+    background-color: grey;
+}

@@ -1,0 +1,28 @@
+.MovieTable
+{
+
+    margin:0 auto;
+    width: 1300px;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    font-size: 34px;
+
+}
+.MovieTable th, td{
+    border-bottom: 1px solid #ddd;
+}
+.MovieTable th{
+    padding: 15px;
+    font-size: 30px;
+}
+.MovieTable .genre{
+    padding: 0 100px;
+}
+.IMAGE{
+    width: 200px;
+    height: 300px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    padding: 5px;
+    margin: 5px;
+}
