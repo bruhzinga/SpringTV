@@ -1,0 +1,57 @@
+.container {
+    max-width: 960px;
+}
+
+form {
+    background-color: #f7f7f7;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+}
+
+form h3 {
+    color: black;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 2rem; /* increase the font size */
+    font-weight: 600;
+}
+
+
+form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+form .form-control {
+    width: 100%; /* or any other value that you want to use */
+    color: black;
+    border-radius: 0.5rem;
+    border: none;
+    background-color: #ebebeb;
+    box-shadow: none;
+    font-size: 1rem;
+    padding: 1rem;
+}
+
+form .form-control:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+form .btn {
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 1rem;
+    transition: all 0.2s;
+}
+
+form .btn:hover {
+    transform: scale(1.05);
+}
+
+
+label
+{
+    font-size: 1.5rem;
+    color: black;
+}

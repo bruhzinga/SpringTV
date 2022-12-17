@@ -1,10 +1,10 @@
 import './App.css';
 import React from 'react';
 import {Route, Routes} from 'react-router-dom';
-import {RegisterPage} from "./Pages/RegisterPage.jsx";
+import {RegisterPage} from "./Pages/RegisterPage/RegisterPage.jsx";
 import {MoviePage} from "./Pages/MoviePage/MoviePage.jsx";
 import {AllMoviesPage} from "./Pages/AllmoviesPage/AllMoviesPage.jsx";
-import {LoginPage} from "./Pages/LoginPage.jsx";
+import {LoginPage} from "./Pages/LoginPage/LoginPage.jsx";
 import {History} from "./Pages/History.jsx";
 import {Favourites} from "./Pages/Favourites.jsx";
 
