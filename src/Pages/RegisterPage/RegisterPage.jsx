@@ -27,7 +27,7 @@ export function RegisterPage() {
     }
 
     return (
-        <div className="container mt-5">
+        <div className="RegisterPage container mt-5">
             <div className="row">
                 <div className="col-md-6 offset-md-3">
                     <form>
@@ -51,5 +51,6 @@ export function RegisterPage() {
                 </div>
             </div>
         </div>
+
     );
 }
