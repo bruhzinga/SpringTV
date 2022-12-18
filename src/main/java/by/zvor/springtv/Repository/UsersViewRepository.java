@@ -2,12 +2,15 @@ package by.zvor.springtv.Repository;
 
 
 import by.zvor.springtv.Config.DataSourceAdmin;
+import by.zvor.springtv.Config.DataSourceUser;
 import by.zvor.springtv.Entity.UsersView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -40,7 +43,7 @@ import java.util.Optional;
 public class UsersViewRepository {
 
     Connection AdminConnection = DataSourceAdmin.getConnection();
-    Connection UserConnection = DataSourceAdmin.getConnection();
+    Connection UserConnection = DataSourceUser.getConnection();
 
     @Autowired
     SearchRepository searchRepository;
@@ -64,6 +67,8 @@ public class UsersViewRepository {
             user.setPasswordHash(rs.getString("PASSWORD_HASH"));
             user.setRole(rs.getString("ROLE"));
         }
+        stmt.close();
+        rs.close();
         return user;
     }
 
@@ -77,6 +82,8 @@ public class UsersViewRepository {
         stmt.registerOutParameter(2, java.sql.Types.NUMERIC);
         stmt.execute();
         Long id = stmt.getLong(2);
+        stmt.close();
+
         return id;
     }
 
@@ -101,19 +108,26 @@ public class UsersViewRepository {
         statement.setString(3, email);
         statement.setLong(4, id);
         statement.execute();
+        statement.close();
 
 
     }
 
     public Optional<String> findUserPasswordByEmail(String email) throws ClassNotFoundException, SQLException {
         email = "=" + "'" + email + "'";
-        var rs = searchRepository.ExecuteSearch("USERS", "EMAIL", email, false);
+        var res = searchRepository.ExecuteSearch("USERS", "EMAIL", email, false);
+        ResultSet rs = (ResultSet) res[0];
+        CallableStatement stmt = (CallableStatement) res[1];
         Optional<String> password = Optional.empty();
         while (rs.next()) {
             password = Optional.of(rs.getString("PASSWORD_HASH"));
 
         }
+        rs.close();
+        stmt.close();
+
         return password;
+
     }
 
 

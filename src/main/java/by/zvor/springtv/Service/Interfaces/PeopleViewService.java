@@ -29,8 +29,8 @@ public class PeopleViewService {
         return peopleViewRepository.findAllByProfession("director");
     }
 
-    public void addActor(String name, Long photoId) throws SQLException, ClassNotFoundException {
-        peopleViewRepository.addActor(name, photoId);
+    public long addActor(String name, Long photoId) throws SQLException, ClassNotFoundException {
+        return peopleViewRepository.addActor(name, photoId);
     }
 
     public int addDirector(String name, Long photoId) throws SQLException, ClassNotFoundException {

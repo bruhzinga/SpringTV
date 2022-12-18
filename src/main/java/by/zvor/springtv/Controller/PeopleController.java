@@ -38,7 +38,7 @@ public class PeopleController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "addActor", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addActor(@RequestBody PeopleView actor) throws SQLException, ClassNotFoundException {
-        peopleViewService.addActor(actor.getName(), actor.getPhotoId());
+        var id = peopleViewService.addActor(actor.getName(), actor.getPhotoId());
         return new ResponseEntity<String>("Actor added", HttpStatus.OK);
     }
 

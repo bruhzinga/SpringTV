@@ -345,7 +345,14 @@ as
     function EncryptPassword(password IN varchar2) RETURN USERS.PASSWORD_HASH%TYPE;
     FUNCTION DecryptPassword(encryptedPassword IN USERS.PASSWORD_HASH%TYPE)
         RETURN varchar2;
-
+    procedure exportGenresToJSON;
+    PROCEDURE importGenresFromJSON;
+    procedure MoviesStressTests(imageId number, videoId number, directorId number, trailerId number) ;
+    procedure deleteMovieById(movieId IN number);
+    procedure updateMovieById(movieId IN number, movieName IN varchar2, movieDescription IN varchar2,
+                              movieYear IN number,
+                              ImageID IN number, VideoID IN number, GenreID IN number, DirectorID IN number,
+                              TrailerID IN number);
 end AdminPackage;
 
 
@@ -542,10 +549,82 @@ as
         l_dec := DBMS_CRYPTO.decrypt(l_in_val, l_mod, utl_i18n.string_to_raw(l_key, 'AL32UTF8'));
         RETURN utl_i18n.raw_to_char(l_dec);
     END DecryptPassword;
+    procedure exportGenresToJSON as
+        file utl_file.file_type;
+    begin
 
+        file := utl_file.fopen('JSON_DIR', 'genres.json', 'w');
+        for c in (select JSON_OBJECT('id' value id, 'name' value name) as json from genres)
+            loop
+                utl_file.put_line(file, c.json);
+            end loop;
+        utl_file.fclose(file);
+
+    end exportGenresToJSON;
+
+    procedure importGenresFromJson as
+        file utl_file.file_type;
+        line varchar2(32767);
+    begin
+        file := utl_file.fopen('JSON_DIR', 'genres.json', 'r');
+        loop
+            begin
+                utl_file.GET_LINE(file, line);
+                merge into genres
+                using (select JSON_VALUE(line, '$.id') as id, JSON_VALUE(line, '$.name') as name from dual) src
+                on (genres.NAME = src.name)
+                when not matched then
+                    insert (name) values (src.name);
+            end;
+        end loop;
+        utl_file.fclose(file);
+    end importGenresFromJson;
+    procedure MoviesStressTests(imageId number, videoId number, directorId number, trailerId number) as
+        v_id number;
+    begin
+        for i in 1..100000
+            loop
+                SPRINGTVADMIN.ADMINPACKAGE.ADDNEWMOVIE('test' || i,
+                                                       'test' || i,
+                                                       2022, imageId, videoId, 1, directorId, trailerId, v_id);
+            end loop;
+    end;
+    procedure deleteMovieById(movieId IN number) is
+    begin
+        delete
+        from movies
+        where movies.id = movieId;
+    end deleteMovieById;
+    procedure updateMovieById(movieId IN number, movieName IN varchar2, movieDescription IN varchar2,
+                              movieYear IN number, imageId IN number, videoId IN number, genreId IN number,
+                              directorId IN number, trailerId IN number) is
+    begin
+        update movies
+        set TITLE       = movieName,
+            DESCRIPTION = movieDescription,
+            YEAR        = movieYear,
+            IMAGE_ID    = imageId,
+            VIDEO_ID    = videoId,
+            GENRE_ID    = genreId,
+            DIRECTOR_ID = directorId,
+            TRAILER_ID  = trailerId
+        where movies.id = movieId;
+    end updateMovieById;
 end AdminPackage;
+
+call AdminPackage.exportGenresToJSON();
+call AdminPackage.importGenresFromJSON();
 
 
 
 grant execute on dbms_crypto to SPRINGTVADMIN;
 
+create directory json_dir as 'JSON';
+drop directory json_dir;
+SELECT *
+FROM DBA_DIRECTORIES;
+
+
+begin
+    SPRINGTVADMIN.ADMINPACKAGE.MoviesStressTests(11, 3, 1, 1);
+end;

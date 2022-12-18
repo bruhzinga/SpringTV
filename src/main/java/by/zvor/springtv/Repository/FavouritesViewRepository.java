@@ -53,6 +53,8 @@ public class FavouritesViewRepository {
             favouritesView.setUsername(resultSet.getString("USERNAME"));
             arrayList.add(favouritesView);
         }
+        statement.close();
+        resultSet.close();
 
         return arrayList;
     }
@@ -63,6 +65,7 @@ public class FavouritesViewRepository {
         statement.setLong(1, userId);
         statement.setLong(2, filmId);
         statement.execute();
+        statement.close();
 
 
     }
@@ -74,6 +77,7 @@ public class FavouritesViewRepository {
         statement.setLong(1, userId);
         statement.setLong(2, filmId);
         statement.execute();
+        statement.close();
 
 
     }

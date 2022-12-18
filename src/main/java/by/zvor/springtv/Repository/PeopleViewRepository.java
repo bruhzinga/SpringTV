@@ -53,15 +53,22 @@ public class PeopleViewRepository {
             person.setPhotoId(rs.getLong("PHOTO_ID"));
             people.add(person);
         }
+        stmt.close();
+        rs.close();
         return people;
     }
 
     /*@Procedure(name = "addActor")*/
-    public void addActor(@Param("actorName") String name, @Param("photoId") Long photoId) throws ClassNotFoundException, SQLException {
-        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addActor(?,?)}");
+    public long addActor(@Param("actorName") String name, @Param("photoId") Long photoId) throws ClassNotFoundException, SQLException {
+        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addActor(?,?,?)}");
         stmt.setString(1, name);
         stmt.setLong(2, photoId);
+        stmt.registerOutParameter(3, Types.NUMERIC);
         stmt.execute();
+        var id = stmt.getLong(3);
+        stmt.close();
+
+        return id;
     }
 
     /*@Procedure(name = "addDirector")*/
@@ -71,15 +78,19 @@ public class PeopleViewRepository {
         stmt.setString(1, name);
         stmt.setLong(2, photoId);
         stmt.execute();
-        return stmt.getInt(3);
+
+        var id = stmt.getInt(3);
+        stmt.close();
+        return id;
     }
 
     /*@Procedure(procedureName = "addActorToMovie")*/
     public void addActorToMovie(@Param("actorId") Long actorId, @Param("movieId") Long movieId, @Param("RoleIn") String role) throws ClassNotFoundException, SQLException {
         java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addActorToMovie(?,?,?)}");
-        stmt.setLong(1, actorId);
-        stmt.setLong(2, movieId);
+        stmt.setLong(1, movieId);
+        stmt.setLong(2, actorId);
         stmt.setString(3, role);
         stmt.execute();
+        stmt.close();
     }
 }

@@ -53,6 +53,7 @@ public class MovieController {
     public ResponseEntity<byte[]> getMovieWithMediaById(@PathVariable("id") int id) throws SQLException, ClassNotFoundException {
         var movie = movieService.getMovieByIdWithMedia(id);
 
+
         var video = movie.getVideo();
         var videoName = movie.getVideoName();
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -100,8 +101,7 @@ public class MovieController {
         var id = movieService.addNewMovie(movie.getTitle(), movie.getYear(), movie.getDescription(), movie.getDirectorId(), movie.getGenreId(), movie.getVideoId(), movie.getTrailerId(), movie.getImageId());
         return new ResponseEntity<>("Movie added with id " + id + " added", HttpStatus.OK);
     }
-/*TODO
-    @GetMapping(value = "search/{searchString}", produces = MediaType.APPLICATION_JSON_VALUE)*/
+
 
     @GetMapping(value = "getmoviesbyActor/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<MoviesView>> getMoviesByActorId(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
@@ -115,10 +115,22 @@ public class MovieController {
         return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
     }
 
-    @GetMapping(value = "SearchMovies", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "SearchMovies", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<MoviesView>> searchMovies(@RequestBody SearchFromUser searchFromUser) throws SQLException, ClassNotFoundException {
         var movies = movieService.SearchMovies(searchFromUser);
         return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateMovie(@PathVariable("id") long id, @RequestBody MovieFromClient movie) throws SQLException, ClassNotFoundException {
+        movieService.updateMovie(id, movie.getTitle(), movie.getYear(), movie.getDescription(), movie.getDirectorId(), movie.getGenreId(), movie.getVideoId(), movie.getTrailerId(), movie.getImageId());
+        return new ResponseEntity<>("Movie with id " + id + " updated", HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "delete/{id}")
+    public ResponseEntity<String> deleteMovie(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
+        movieService.deleteMovie(id);
+        return new ResponseEntity<>("Movie with id " + id + " deleted", HttpStatus.OK);
     }
 
 

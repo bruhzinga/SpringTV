@@ -59,6 +59,15 @@ public class MovieService {
     }
 
     public Collection<MoviesView> SearchMovies(SearchFromUser searchFromUser) throws SQLException, ClassNotFoundException {
-        return moviesViewRepository.SearchMovies(searchFromUser.getColumnName(), searchFromUser.getSearchParameters(), searchFromUser.isOracleText());
+        return moviesViewRepository.SearchMovies(searchFromUser.getColumnName(), searchFromUser.getSearchParameters(), searchFromUser.isOracleText(), searchFromUser.getPage());
+    }
+
+    public void updateMovie(long id, String title, int year, String description, int directorId, int genreId, int videoId, int trailerId, int imageId) throws SQLException {
+        moviesViewRepository.updateMovie(id, title, year, description, directorId, genreId, videoId, trailerId, imageId);
+    }
+
+    public void deleteMovie(long id) throws SQLException {
+        moviesViewRepository.deleteMovie(id);
+
     }
 }

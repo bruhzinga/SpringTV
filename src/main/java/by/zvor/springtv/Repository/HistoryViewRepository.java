@@ -23,6 +23,7 @@ public class HistoryViewRepository {
         statement.setLong(1, userId);
         statement.setInt(2, id);
         statement.execute();
+        statement.close();
     }
 
     public Collection<HistoryView> getUserHistoryByUsername(String username) throws SQLException {
@@ -40,6 +41,8 @@ public class HistoryViewRepository {
             historyView.setId(rs.getLong("ID"));
             history.add(historyView);
         }
+        rs.close();
+        statement.close();
         return history;
 
 

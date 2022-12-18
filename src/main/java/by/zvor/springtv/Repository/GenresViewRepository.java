@@ -52,6 +52,8 @@ public class GenresViewRepository {
             genresView.setName(resultSet.getString("NAME"));
             arrayList.add(genresView);
         }
+        statement.close();
+        resultSet.close();
 
         return arrayList;
 
@@ -63,6 +65,8 @@ public class GenresViewRepository {
         var statement = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.addGenre(?)}");
         statement.setString(1, genreName);
         statement.execute();
+        statement.close();
+
 
     }
 
@@ -71,6 +75,7 @@ public class GenresViewRepository {
         var statement = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.deleteGenre(?)}");
         statement.setLong(1, id);
         statement.execute();
+        statement.close();
 
 
     }

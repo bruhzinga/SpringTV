@@ -69,11 +69,12 @@ from people p;
 
 create or replace view MOVIE_ACTORS_VIEW as
 select mc.id,
-       m.id as movie_id,
+       m.id    as movie_id,
        m.TITLE,
-       p.id as actor_id,
+       p.id    as actor_id,
        p.name,
-       I.ID as image_id
+       I.ID    as image_id,
+       mc.ROLE as role
 from MOVIE_CASTS mc
          join people p on mc.actor_id = p.id
          join movies m on mc.movie_id = m.id

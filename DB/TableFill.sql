@@ -121,14 +121,58 @@ delete
 from movies
 where TITLE = 'jsadjsadj';
 
+create procedure MOVIESStressTest as
+
+    v_id number;
+begin
+    for i in 1..100000
+        loop
+            SPRINGTVADMIN.ADMINPACKAGE.ADDNEWMOVIE('test' || i,
+                                                   'test' || i,
+                                                   2022, 4, 1, 1, 2, 2, v_id);
+        end loop;
+end;
+
+    begin
+        MOVIESStressTest;
+    end;
+
+select *
+from MOVIES_VIEW
+where DESCRIPTION = 'test125';
+
+
+select count(*)
+from MOVIES;
+
+create index movies_imaged_id_idx
+    on movies (image_id);
+create index movies_description_idx
+    on movies (description);
+create index movies_title_idx
+    on movies (title);
+create index movies_year_idx
+    on movies (year);
+create index movies_number_of_views_idx
+    on movies (number_of_views);
+
+drop index movies_imaged_id_idx;
+drop index movies_description_idx;
+drop index movies_title_idx;
+drop index movies_year_idx;
+drop index movies_number_of_views_idx;
+
 
 declare
     v_id number;
 begin
-    for i in 2..100000
+    for i in 1..100000
         loop
-            SPRINGTVADMIN.ADMINPACKAGE.ADDNEWMOVIE('test' || i,
-                                                   'test' || i,
-                                                   2022, 1, 3, 72, 1, 1, v_id);
+            insert into movies(TITLE, YEAR, IMAGE_ID, TRAILER_ID, VIDEO_ID, DIRECTOR_ID, GENRE_ID, DESCRIPTION)
+            values ('test', 2022, 21, 2, 1, 7, 1, 'asdasd');
         end loop;
+end;
+
+begin
+    ADMINPACKAGE.
 end;

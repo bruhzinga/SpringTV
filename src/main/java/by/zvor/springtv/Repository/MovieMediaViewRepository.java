@@ -2,7 +2,6 @@ package by.zvor.springtv.Repository;
 
 import by.zvor.springtv.Config.DataSourceUser;
 import by.zvor.springtv.Entity.MovieMediaView;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
@@ -23,7 +22,7 @@ public class MovieMediaViewRepository {
     public MovieMediaViewRepository() throws SQLException {
     }
 
-    public MovieMediaView getMovieByIdWithMedia(@Param("movieId") int id) throws ClassNotFoundException, SQLException {
+    public MovieMediaView getMovieByIdWithMedia(int id) throws ClassNotFoundException, SQLException {
         var statement = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getMovieByIdWithMedia(?,?)}");
         statement.setInt(1, id);
         statement.registerOutParameter(2, java.sql.Types.REF_CURSOR);
@@ -39,8 +38,8 @@ public class MovieMediaViewRepository {
             movieMediaView.setTrailerName(resultSet.getString("TRAILER_NAME"));
             movieMediaView.setTrailerVideo(resultSet.getBytes("TRAILER_VIDEO"));
         }
-
-
+        resultSet.close();
+        statement.close();
         return movieMediaView;
     }
 }

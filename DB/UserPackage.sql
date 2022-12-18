@@ -22,7 +22,6 @@ as
 end UserPackage;
 
 
-
 create or replace package body UserPackage
 as
     procedure getUserById(userId IN number, result OUT sys_refcursor) is
@@ -60,7 +59,7 @@ as
     begin
         Open result for select *
                         from MOVIES_VIEW
-                        order by ID
+                        order by "ID"
                         offset (page - 1) * 50 rows fetch next 50 rows only;
     end getAllMoviesWithoutMedia;
     procedure getMovieByIdWithMedia(movieId IN number, result OUT SYS_REFCURSOR) is
@@ -115,7 +114,7 @@ as
     procedure GetPersonImageById(personId IN number, result OUT blob) is
         peopleType varchar2(20);
     begin
-        select "TYPE" into peopleType from IMAGES where id = personId;
+        /*select "TYPE" into peopleType from IMAGES where id = personId;
         if peopleType = 'director' or peopleType = 'actor' then
             select IMAGE
             into result
@@ -123,19 +122,31 @@ as
             where ID = personId;
         else
             raise_application_error(-20001, 'Person ID is not actor or director');
+        end if;*/
+        select PROFESSION into peopleType from PEOPLE where ID = personId;
+        if peopleType = 'director' or peopleType = 'actor' then
+            select IMAGE
+            into result
+            from IMAGES_VIEW
+                     join PEOPLE on PEOPLE.PHOTO_ID = IMAGES_VIEW.ID
+            where PEOPLE.ID = personId;
+
+        else
+            raise_application_error(-20001, 'Person ID is not actor or director');
         end if;
     end GetPersonImagebyId;
     procedure getMoviesByActorId(actorId IN number, result OUT SYS_REFCURSOR) is
-        existActor varchar2(20);
+
     begin
         --check if id exists
-        select (select ID from people where id = actorId) into existActor from dual;
-        if actorId is null then
+        select (select ID from people where id = actorId) into existence from dual;
+        if existence is null then
             raise_application_error(-20001, 'Actor not found');
         end if;
         Open result for select *
-                        from MOVIE_ACTORS_VIEW
-                        where ACTOR_ID = actorId;
+                        from MOVIES_VIEW
+                                 join MOVIE_ACTORS_VIEW on MOVIES_VIEW.ID = MOVIE_ACTORS_VIEW.MOVIE_ID
+                        where MOVIE_ACTORS_VIEW.ACTOR_ID = actorId;
 
     end getMoviesByActorId;
     procedure getMoviesByDirectorId(directorID IN number, result OUT SYS_REFCURSOR) is
@@ -190,5 +201,6 @@ as
 
     end SearchTables;
 end UserPackage;
+
 
 

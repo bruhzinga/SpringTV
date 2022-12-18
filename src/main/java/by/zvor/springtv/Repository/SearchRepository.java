@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Repository
@@ -23,7 +22,7 @@ public class SearchRepository {
 //                           OracleText IN boolean, result OUT SYS_REFCURSOR)
 
 
-    public ResultSet ExecuteSearch(String tableName, String columnName, String searchParameters, boolean oracleText) throws SQLException {
+    public Object[] ExecuteSearch(String tableName, String columnName, String searchParameters, boolean oracleText) throws SQLException {
         CallableStatement stmt = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.SearchTables(?,?,?,?,?)}");
         stmt.setString(1, tableName.toUpperCase());
         stmt.setString(2, columnName.toUpperCase());
@@ -36,7 +35,7 @@ public class SearchRepository {
         stmt.registerOutParameter(5, java.sql.Types.REF_CURSOR);
         stmt.execute();
         java.sql.ResultSet rs = (java.sql.ResultSet) stmt.getObject(5);
-        return rs;
+        return new Object[]{rs, stmt};
     }
 
 

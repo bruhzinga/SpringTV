@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.Collection;
 
 /*
@@ -116,10 +114,11 @@ public class MoviesViewRepository {
         return actors;
     }
 
-    //create or replace procedure AddNewMovie(movieName IN varchar2, movieDescription IN MOVIES.DESCRIPTION%TYPE,
-    //                                        movieYear IN number,
-    //                                        ImageID IN number, VideoID IN number, GenreID IN number, DirectorID IN number,
-    //                                        TrailerID IN number) is
+
+    /* procedure AddNewMovie(movieName IN varchar2, movieDescription IN varchar2,
+                           movieYear IN number,
+                           ImageID IN number, VideoID IN number, GenreID IN number, DirectorID IN number,
+                           TrailerID IN number, movieId OUT number) is*/
     public int addNewMovie(String title, int year, String description, int directorId, int genreId, int videoId, int trailerId, int imageId) throws SQLException {
         java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.AddNewMovie(?,?,?,?,?,?,?,?,?)}");
         stmt.setString(1, title);
@@ -132,9 +131,10 @@ public class MoviesViewRepository {
         stmt.setInt(8, trailerId);
         stmt.registerOutParameter(9, Types.INTEGER);
         stmt.execute();
-
+        var id = stmt.getInt(9);
         stmt.close();
-        return stmt.getInt(9);
+        return id;
+
 
     }
 
@@ -184,10 +184,17 @@ public class MoviesViewRepository {
         return movies;
     }
 
-    public Collection<MoviesView> SearchMovies(String columnName, String searchParameters, boolean oracleText) throws SQLException, ClassNotFoundException {
-        var rs = searchRepository.ExecuteSearch("MOVIES_VIEW", columnName, searchParameters, oracleText);
+    public Collection<MoviesView> SearchMovies(String columnName, String searchParameters, boolean oracleText, int page) throws SQLException, ClassNotFoundException {
+        var res = searchRepository.ExecuteSearch("MOVIES_VIEW", columnName, searchParameters, oracleText);
+        ResultSet rs = (ResultSet) res[0];
+        CallableStatement stmt = (CallableStatement) res[1];
+
         var movies = new java.util.ArrayList<MoviesView>();
-        while (rs.next()) {
+        int i = 0;
+        for (i = 0; i < (page - 1) * 50; i++)
+            rs.next();
+        i = 0;
+        while (rs.next() && i < 50) {
             var movie = new MoviesView();
             movie.setId(rs.getInt("ID"));
             movie.setTitle(rs.getString("TITLE"));
@@ -197,8 +204,38 @@ public class MoviesViewRepository {
             movie.setDirector(rs.getString("DIRECTOR"));
             movie.setGenre(rs.getString("GENRE"));
             movies.add(movie);
+            i++;
         }
+        rs.close();
+        stmt.close();
+
         return movies;
+
     }
 
+    public void updateMovie(long id, String title, int year, String description, int directorId, int genreId, int videoId, int trailerId, int imageId) throws SQLException {
+
+        java.sql.CallableStatement stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.updateMovieById(?,?,?,?,?,?,?,?,?)}");
+        stmt.setLong(1, id);
+        stmt.setString(2, title);
+        stmt.setString(3, description);
+        stmt.setInt(4, year);
+        stmt.setInt(5, imageId);
+        stmt.setInt(6, videoId);
+        stmt.setInt(7, genreId);
+        stmt.setInt(8, directorId);
+        stmt.setInt(9, trailerId);
+        stmt.execute();
+        stmt.close();
+
+    }
+
+    public void deleteMovie(long id) throws SQLException {
+        var stmt = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.deleteMovieById(?)}");
+        stmt.setLong(1, id);
+        stmt.execute();
+        stmt.close();
+
+
+    }
 }

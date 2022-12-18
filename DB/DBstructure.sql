@@ -3,8 +3,8 @@ CREATE PLUGGABLE DATABASE SpringTV ADMIN USER SpringTVAdmin IDENTIFIED BY qwerty
     STORAGE (MAXSIZE UNLIMITED)
     DEFAULT TABLESPACE SpringTV_TS
         DATAFILE 'SpringTV_TS.DBF' SIZE 2 G AUTOEXTEND ON NEXT 100 M MAXSIZE 10 G
-    PATH_PREFIX ='/SpringTV/'
-    FILE_NAME_CONVERT =('/pdbseed/','/SpringTV/');
+    PATH_PREFIX ='/opt/oracle/dbs/SpringTV/'
+    FILE_NAME_CONVERT =('/opt/oracle/oradata/XE/pdbseed/','/opt/oracle/dbs/SpringTV/');
 
 --drop pluggable database SpringTV including datafiles;
 ALTER PLUGGABLE DATABASE SpringTV OPEN;
@@ -45,6 +45,3 @@ grant UserRole to SpringTVUser;
 
 
 
-alter session set container = cdb$root;
-
-drop user customer cascade;

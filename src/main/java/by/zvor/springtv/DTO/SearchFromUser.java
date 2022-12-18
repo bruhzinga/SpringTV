@@ -16,4 +16,6 @@ public class SearchFromUser {
     private String searchParameters;
     private boolean oracleText;
 
+    private int page;
+
 }

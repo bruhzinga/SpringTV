@@ -29,6 +29,7 @@ public class CommentsViewRepository {
         statement.setLong(2, movieId);
         statement.setString(3, commentText);
         statement.execute();
+        statement.close();
 
     }
 
@@ -50,6 +51,8 @@ public class CommentsViewRepository {
             commentsView.setUsername(resultSet.getString("USERNAME"));
             arrayList.add(commentsView);
         }
+        resultSet.close();
+        statement.close();
 
         return arrayList;
     }

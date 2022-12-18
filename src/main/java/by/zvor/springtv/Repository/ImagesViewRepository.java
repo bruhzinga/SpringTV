@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +33,9 @@ public class ImagesViewRepository {
         statement.setBytes(2, image);
         statement.setString(3, type);
         statement.execute();
-        return statement.getInt(4);
+        var id = statement.getInt(4);
+        statement.close();
+        return id;
 
     }
 
@@ -42,7 +46,8 @@ public class ImagesViewRepository {
         stmt.execute();
         java.sql.Blob blob = stmt.getBlob(2);
         var image = blob.getBytes(1, (int) blob.length());
-
+        blob.free();
+        stmt.close();
         return image;
     }
 
@@ -53,7 +58,8 @@ public class ImagesViewRepository {
         stmt.execute();
         java.sql.Blob blob = stmt.getBlob(2);
         var image = blob.getBytes(1, (int) blob.length());
-
+        stmt.close();
+        blob.free();
         return image;
     }
 
@@ -61,6 +67,7 @@ public class ImagesViewRepository {
         var statement = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.DeleteImageById(?)}");
         statement.setLong(1, id);
         statement.execute();
+        statement.close();
 
 
     }
@@ -72,12 +79,15 @@ public class ImagesViewRepository {
         statement.setBytes(3, image);
         statement.setString(4, type);
         statement.execute();
+        statement.close();
 
 
     }
 
     public Collection<ImageInfoToUser> SearchImages(String columnName, String searchParameters, boolean oracleText) throws SQLException {
-        var rs = searchRepository.ExecuteSearch("IMAGES_VIEW", columnName, searchParameters, oracleText);
+        var res = searchRepository.ExecuteSearch("IMAGES_VIEW", columnName, searchParameters, oracleText);
+        ResultSet rs = (ResultSet) res[0];
+        CallableStatement stmt = (CallableStatement) res[1];
         var Images = new ArrayList<ImageInfoToUser>();
         while (rs.next()) {
             var Image = new ImageInfoToUser();
@@ -86,6 +96,8 @@ public class ImagesViewRepository {
             Image.setType(rs.getString("TYPE"));
             Images.add(Image);
         }
+        rs.close();
+        stmt.close();
         return Images;
 
     }
