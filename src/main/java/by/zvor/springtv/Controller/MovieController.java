@@ -103,15 +103,15 @@ public class MovieController {
     }
 
 
-    @GetMapping(value = "getmoviesbyActor/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<MoviesView>> getMoviesByActorId(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
-        var movies = movieService.getMoviesByActorId(id);
+    @GetMapping(value = "getmoviesbyActor/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<MoviesView>> getMoviesByActorId(@PathVariable("id") long id, @RequestBody SearchFromUser search) throws SQLException, ClassNotFoundException {
+        var movies = movieService.getMoviesByActorId(id, search.getPage());
         return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
     }
 
-    @GetMapping(value = "getmoviesbyDirector/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<MoviesView>> getMoviesByDirectorId(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
-        var movies = movieService.getMoviesByDirectorId(id);
+    @GetMapping(value = "getmoviesbyDirector/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<MoviesView>> getMoviesByDirectorId(@PathVariable("id") long id, @RequestBody SearchFromUser search) throws SQLException, ClassNotFoundException {
+        var movies = movieService.getMoviesByDirectorId(id, search.getPage());
         return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
     }
 
@@ -121,12 +121,14 @@ public class MovieController {
         return new ResponseEntity<Collection<MoviesView>>(movies, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping(value = "update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateMovie(@PathVariable("id") long id, @RequestBody MovieFromClient movie) throws SQLException, ClassNotFoundException {
         movieService.updateMovie(id, movie.getTitle(), movie.getYear(), movie.getDescription(), movie.getDirectorId(), movie.getGenreId(), movie.getVideoId(), movie.getTrailerId(), movie.getImageId());
         return new ResponseEntity<>("Movie with id " + id + " updated", HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "delete/{id}")
     public ResponseEntity<String> deleteMovie(@PathVariable("id") long id) throws SQLException, ClassNotFoundException {
         movieService.deleteMovie(id);

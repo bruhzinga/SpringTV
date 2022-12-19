@@ -56,5 +56,11 @@ public class PeopleController {
         return new ResponseEntity<String>("Actor added to movie", HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping(value = "delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> deleteActor(@PathVariable("id") int id) throws SQLException, ClassNotFoundException {
+        peopleViewService.deletePeople(id);
+        return new ResponseEntity<String>("Actor deleted", HttpStatus.OK);
+    }
 
 }

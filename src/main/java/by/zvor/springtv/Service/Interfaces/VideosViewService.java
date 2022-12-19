@@ -25,4 +25,8 @@ public class VideosViewService {
     public Collection<VideoInfoToUser> searchVideos(SearchFromUser searchFromUser) throws SQLException {
         return videosViewRepository.SearchVideos(searchFromUser.getTableName(), searchFromUser.getColumnName(), searchFromUser.getSearchParameters(), searchFromUser.isOracleText());
     }
+
+    public void deleteVideo(int id) throws SQLException {
+        videosViewRepository.deleteVideo(id);
+    }
 }

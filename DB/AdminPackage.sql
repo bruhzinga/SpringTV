@@ -322,7 +322,7 @@ end getUserHistoryByUsername;
 
 create or replace package AdminPackage
 as
-    procedure RegisterUser(user_login VARCHAR2, user_password VARCHAR2, user_email VARCHAR2,
+    r        pocedure RegisterUser(user_login VARCHAR2, user_password VARCHAR2, user_email VARCHAR2,
                            user_role_id Number);
     procedure addFavourite(userID number, movieID number);
     procedure deleteFavourite(userID number, movieID number);
@@ -353,6 +353,9 @@ as
                               movieYear IN number,
                               ImageID IN number, VideoID IN number, GenreID IN number, DirectorID IN number,
                               TrailerID IN number);
+    procedure deletePeopleById(peopleId IN number);
+    procedure DeleteVideobyId(videoId IN number);
+    procedure GetFavouriteStatistics;
 end AdminPackage;
 
 
@@ -363,6 +366,9 @@ as
                            user_role_id Number) is
         EncryptedPassword varchar2(100);
     begin
+        if length(user_password) < 8 then
+            raise_application_error(-20001, 'Password must be at least 8 characters long');
+        end if;
         EncryptedPassword := EncryptPassword(user_password);
         INSERT INTO users (USERNAME, PASSWORD_HASH, email, ROLE_ID)
         VALUES (user_login, (EncryptedPassword), user_email, user_role_id);
@@ -610,6 +616,29 @@ as
             TRAILER_ID  = trailerId
         where movies.id = movieId;
     end updateMovieById;
+    procedure deletePeopleById(peopleId IN number) is
+    begin
+        delete
+        from people
+        where people.id = peopleId;
+    end deletePeopleById;
+    procedure DeleteVideobyId(videoId IN number) is
+    begin
+        delete
+        from videos
+        where videos.id = videoId;
+    end DeleteVideobyId;
+    procedure GetFavouriteStatistics is
+    begin
+        for c in (select count(*) as count, movies.title as title
+                  from movies
+                           join favourites on movies.id = favourites.movie_id
+                  group by movies.title
+                  order by count desc)
+            loop
+                dbms_output.put_line(c.title || ' ' || c.count);
+            end loop;
+    end GetFavouriteStatistics;
 end AdminPackage;
 
 call AdminPackage.exportGenresToJSON();
@@ -627,4 +656,16 @@ FROM DBA_DIRECTORIES;
 
 begin
     SPRINGTVADMIN.ADMINPACKAGE.MoviesStressTests(11, 3, 1, 1);
+end;
+
+
+call SPRINGTVADMIN.ADMINPACKAGE.GetFavouriteStatistics();
+
+
+begin
+    for i in 1..200
+        loop
+            SPRINGTVADMIN.ADMINPACKAGE.ADDGENRE('test' || i);
+        end loop;
+
 end;

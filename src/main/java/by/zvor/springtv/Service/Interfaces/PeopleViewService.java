@@ -41,4 +41,7 @@ public class PeopleViewService {
         peopleViewRepository.addActorToMovie(actorId, movieId, role);
     }
 
+    public void deletePeople(int id) throws SQLException {
+        peopleViewRepository.deleteById(id);
+    }
 }

@@ -136,12 +136,17 @@ as
         end if;
     end GetPersonImagebyId;
     procedure getMoviesByActorId(actorId IN number, result OUT SYS_REFCURSOR) is
+        profession varchar2(20);
 
     begin
         --check if id exists
         select (select ID from people where id = actorId) into existence from dual;
         if existence is null then
             raise_application_error(-20001, 'Actor not found');
+        end if;
+        select (select PROFESSION from people where id = actorId) into profession from dual;
+        if profession != 'actor' then
+            raise_application_error(-20001, 'Person is not an actor');
         end if;
         Open result for select *
                         from MOVIES_VIEW
@@ -150,11 +155,18 @@ as
 
     end getMoviesByActorId;
     procedure getMoviesByDirectorId(directorID IN number, result OUT SYS_REFCURSOR) is
+        profession varchar2(20);
     begin
         select (select ID from people where id = directorID) into existence from dual;
         if existence is null then
-            raise_application_error(-20001, 'Actor not found');
+            raise_application_error(-20001, 'Director not found');
         end if;
+        select (select PROFESSION from people where id = directorID) into profession from dual;
+        if profession != 'director' then
+            raise_application_error(-20001, 'Person is not a director');
+        end if;
+
+
         Open result for select *
                         from MOVIES_VIEW
                                  join people on people.NAME = movies_view.DIRECTOR

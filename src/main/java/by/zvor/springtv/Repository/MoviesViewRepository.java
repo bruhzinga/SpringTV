@@ -138,14 +138,19 @@ public class MoviesViewRepository {
 
     }
 
-    public Collection<MoviesView> getMoviesByActorId(long id) throws SQLException {
+    public Collection<MoviesView> getMoviesByActorId(long id, int page) throws SQLException {
         java.sql.CallableStatement stmt = UserConnection.prepareCall("{call SPRINGTVADMIN.USERPACKAGE.getMoviesByActorId(?,?)}");
         stmt.setLong(1, id);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         stmt.execute();
         java.sql.ResultSet rs = (java.sql.ResultSet) stmt.getObject(2);
         var movies = new java.util.ArrayList<MoviesView>();
-        while (rs.next()) {
+        int i = 0;
+        for (i = 0; i < (page - 1) * 50; i++)
+            rs.next();
+        i = 0;
+
+        while (rs.next() && i < 50) {
             var movie = new MoviesView();
             movie.setId(rs.getInt("ID"));
             movie.setTitle(rs.getString("TITLE"));
@@ -155,20 +160,25 @@ public class MoviesViewRepository {
             movie.setDirector(rs.getString("DIRECTOR"));
             movie.setGenre(rs.getString("GENRE"));
             movies.add(movie);
+            i++;
         }
         rs.close();
         stmt.close();
         return movies;
     }
 
-    public Collection<MoviesView> getMoviesByDirectorId(long id) throws SQLException {
+    public Collection<MoviesView> getMoviesByDirectorId(long id, long page) throws SQLException {
         java.sql.CallableStatement stmt = UserConnection.prepareCall("{ call SPRINGTVADMIN.USERPACKAGE.getMoviesByDirectorId(?,?)}");
         stmt.setLong(1, id);
         stmt.registerOutParameter(2, java.sql.Types.REF_CURSOR);
         stmt.execute();
         java.sql.ResultSet rs = (java.sql.ResultSet) stmt.getObject(2);
         var movies = new java.util.ArrayList<MoviesView>();
-        while (rs.next()) {
+        int i = 0;
+        for (i = 0; i < (page - 1) * 50; i++)
+            rs.next();
+        i = 0;
+        while (rs.next() && i < 50) {
             var movie = new MoviesView();
             movie.setId(rs.getInt("ID"));
             movie.setTitle(rs.getString("TITLE"));
@@ -178,6 +188,7 @@ public class MoviesViewRepository {
             movie.setDirector(rs.getString("DIRECTOR"));
             movie.setGenre(rs.getString("GENRE"));
             movies.add(movie);
+            i++;
         }
         rs.close();
         stmt.close();

@@ -6,6 +6,7 @@ import by.zvor.springtv.Entity.PeopleView;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -92,5 +93,11 @@ public class PeopleViewRepository {
         stmt.setString(3, role);
         stmt.execute();
         stmt.close();
+    }
+
+    public void deleteById(int id) throws SQLException {
+        CallableStatement stmt =  AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.deletePeopleById(?)}");
+        stmt.setInt(1, id);
+        stmt.execute();
     }
 }

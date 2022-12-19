@@ -53,4 +53,13 @@ public class VideosViewRepository {
         stmt.close();
         return videoInfoToUser;
     }
+
+    public void deleteVideo(int id) throws SQLException {
+
+            var statement = AdminConnection.prepareCall("{call SPRINGTVADMIN.ADMINPACKAGE.DeleteVideobyId(?)}");
+            statement.setInt(1, id);
+            statement.execute();
+            statement.close();
+
+    }
 }

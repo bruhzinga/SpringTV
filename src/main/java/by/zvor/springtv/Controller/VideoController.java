@@ -40,5 +40,11 @@ public class VideoController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping(value="delete/{id}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> deleteVideo(@PathVariable("id") int id) throws SQLException, ClassNotFoundException {
+        videoService.deleteVideo(id);
+        return new ResponseEntity<String>("Video deleted", HttpStatus.OK);
+    }
 
 }

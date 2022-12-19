@@ -49,12 +49,12 @@ public class MovieService {
         return moviesViewRepository.addNewMovie(title, year, description, directorId, genreId, videoId, trailerId, imageId);
     }
 
-    public Collection<MoviesView> getMoviesByActorId(long id) throws SQLException {
-        return moviesViewRepository.getMoviesByActorId(id);
+    public Collection<MoviesView> getMoviesByActorId(long id, int page) throws SQLException {
+        return moviesViewRepository.getMoviesByActorId(id, page);
     }
 
-    public Collection<MoviesView> getMoviesByDirectorId(long id) throws SQLException {
-        return moviesViewRepository.getMoviesByDirectorId(id);
+    public Collection<MoviesView> getMoviesByDirectorId(long id, long page) throws SQLException {
+        return moviesViewRepository.getMoviesByDirectorId(id, page);
 
     }
 

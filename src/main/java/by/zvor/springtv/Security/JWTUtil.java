@@ -18,7 +18,7 @@ public class JWTUtil {
     private String secret;
 
     public String generateToken(final String login) {
-        final Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(60).toInstant());
+        final Date expirationDate = Date.from(ZonedDateTime.now().plusMinutes(120).toInstant());
 
         return JWT.create().withSubject("User details").withClaim("login", login).withIssuedAt(new Date()).withIssuer("Demo").withExpiresAt(expirationDate).sign(Algorithm.HMAC256(this.secret));
     }
