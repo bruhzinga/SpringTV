@@ -20,7 +20,7 @@ export function LoginPage() {
                 console.log(responce.data);
                 localStorage.setItem("token", JSON.stringify(responce.data));
                 alert(responce.data);
-                navigator("/allMovies");
+                navigator("/movies");
             })
             .catch((response) => {
                 console.log("Ошибка");
@@ -98,10 +98,11 @@ export function LoginPage() {
                                 id="email"
                                 placeholder="Email"
                             />
+                            <button onClick={SendEmailHandle} className="btn btn-primary btn-block">
+                                Send
+                            </button>
                         </div>
-                        <button onClick={SendEmailHandle} className="btn btn-primary btn-block">
-                            Send
-                        </button>
+
                     </form>
                 </div>
             </div>

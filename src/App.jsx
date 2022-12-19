@@ -7,6 +7,8 @@ import {AllMoviesPage} from "./Pages/AllmoviesPage/AllMoviesPage.jsx";
 import {LoginPage} from "./Pages/LoginPage/LoginPage.jsx";
 import {History} from "./Pages/History.jsx";
 import {Favourites} from "./Pages/Favourites.jsx";
+import {SearchMoviesPage} from "./Pages/SearchMoviePage/SeachMoviePage";
+
 
 
 function App() {
@@ -15,10 +17,14 @@ function App() {
             <Routes>
                 <Route path="/login" element={<LoginPage/>} />
                 <Route path="/register" element={<RegisterPage/>} />
-                <Route path="/allMovies" element={<AllMoviesPage/>} />
+                <Route path="/movies" element={<AllMoviesPage/>} />
                 <Route path="/movies/:id" element={<MoviePage/>} />
                 <Route path="/history" element={<History/>} />
                 <Route path="/favourites" element={<Favourites/>} />
+                <Route path="/" element={<LoginPage/>} />
+                <Route path="/search" element={<SearchMoviesPage/>} />
+
+
             </Routes>
         </div>
     );
